@@ -1,7 +1,4 @@
-# sleigh specification file for Skeleton Processor
-#   >> see docs/languages/sleigh.htm or sleigh.pdf for Sleigh syntax
-# Other language modules (see Ghidra/Processors) may provide better examples
-# when creating a new language module.
+# Sleigh specification file for SC/MP Processor
 
 define endian=little;
 define alignment=1;
@@ -60,6 +57,6 @@ EA: disp8(op_ptr) is op_m = 0; op_ptr ; disp8 {
   export ret;
 }
 
-:LD EA is op3_7 = 0x10; EA {
+:LD EA is op3_7 = 0x18; EA {
   AC = *EA;
 }

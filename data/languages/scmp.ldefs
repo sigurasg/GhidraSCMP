@@ -10,7 +10,7 @@
             version="1.0"
             slafile="scmp.sla"
             processorspec="scmp.pspec"
-            id="svmp:LE:16:default">
+            id="SCMP:LE:16:default">
     <description>A Language Module for the National Semiconductor SC/MP Processor</description>
     <compiler name="default" spec="scmp.cspec" id="default"/>
   </language> 
