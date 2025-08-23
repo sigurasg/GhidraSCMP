@@ -36,4 +36,4 @@ define context contextreg
 @define S_flag "F[7,1]"		# S: Sign
 
 # Include contents of skel.sinc file
-@include "skel.sinc"
+@include "scmp.sinc"
