@@ -32,7 +32,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void LD() {
+	public void LD() {		
 		test(0xC0, "LD 0x0E",0x0E);
 	}
 
