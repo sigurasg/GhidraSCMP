@@ -1,6 +1,6 @@
 # Sleigh specification file for SC/MP Processor
 
-define endian=little;
+define endian=big;
 define alignment=1;
 
 define space ram     type=ram_space      size=2  default;
@@ -8,23 +8,19 @@ define space ram     type=ram_space      size=2  default;
 define space register type=register_space size=1;
 
 define register offset=0x00 size=1 [ AC SR E ];
-define register offset=0x04 size=2 [ PC P1 P2 P3 ];
+define register offset=0x10 size=2 [ PC P1 P2 P3 ];
 
 # Flag bits
-@define CYL_flag  "SR[7,1]"		# CY/L: Carry/lINK
-@define OV_flag   "SR[6,1]"		# OV: Overflow
-@define SB_flag   "SR[5,1]"	  # SB: Sense Bit B
-@define SA_flag   "SR[4,1]"		# SA: Sense Bit 1
-@define IE_flag   "SR[3,1]"		# IE: Interrupt Enable
-@define F2_flag   "SR[2,1]"		# F2: User Flag 2 
-@define F1_flag   "SR[1,1]"		# F1: User Flag 1
-@define F0_flag   "SR[0,1]"		# F0: User Flag 0
-
-
-# sleigh include file for Skeleton language instructions
+@define CYL_flag  "SR[7,1]"   # CY/L: Carry/lINK
+@define OV_flag   "SR[6,1]"   # OV: Overflow
+@define SB_flag   "SR[5,1]"   # SB: Sense Bit B
+@define SA_flag   "SR[4,1]"   # SA: Sense Bit 1
+@define IE_flag   "SR[3,1]"   # IE: Interrupt Enable
+@define F2_flag   "SR[2,1]"   # F2: User Flag 2
+@define F1_flag   "SR[1,1]"   # F1: User Flag 1
+@define F0_flag   "SR[0,1]"   # F0: User Flag 0
 
 define token opbyte (8)
-   op0_8     = (0,7)
    op3_7     = (3,7)
    op_m 	   = (2,2)
    op_ptr    = (0,1)
@@ -37,26 +33,25 @@ define token data8 (8)
 
 attach variables [ op_ptr ] [ PC P1 P2 P3 ];
 
+@if 0
 # PC-relative EA.
-EA: loc is op_m = 0 & op_ptr = 0; disp8 [ loc = (inst_next + disp8) & 0xFFF; ] {
+EA: loc is op_m = 0 & op_ptr = 0; op_ptr ; disp8 [ loc = (inst_next + disp8) & 0xFFF; ] {
   local ret:2 = (inst_next + disp8) & 0xFFF;
   export ret;
 }
-@if 0
-# How to select for the special case of imm8 = 0x80?
-EA: E(PC) is op_m = 0 & op_ptr = 0 & E; imm8 {
-  local ret:2 = *E;
-  ret = (ret + inst_next) & 0xFFF;
-  export ret;
-}
-@endif 
 
 # Pointer-relative.
-EA: disp8(op_ptr) is op_m = 0; op_ptr ; disp8 {
+EA: disp8(op_ptr) is op_m = 0 ; op_ptr ; disp8 {
   local ret:2 = (op_ptr + disp8) & 0xFFF;
   export ret;
 }
+@endif
 
-:LD EA is op3_7 = 0x18; EA {
+EA: "E"(op_ptr) is op_m = 0 & imm8 = 0x80; op_ptr ; imm8 {
+  local ret:2 = (op_ptr) & 0xFFF;
+  export ret;
+}
+
+:LD EA is op3_7 = 0x18; imm8; EA {
   AC = *EA;
 }

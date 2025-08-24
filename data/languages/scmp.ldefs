@@ -4,13 +4,13 @@
 
 <language_definitions>
   <language processor="SC/MP"
-            endian="little"
+            endian="big"
             size="16"
             variant="default"
             version="1.0"
             slafile="scmp.sla"
             processorspec="scmp.pspec"
-            id="SCMP:LE:16:default">
+            id="SCMP:BE:16:default">
     <description>A Language Module for the National Semiconductor SC/MP Processor</description>
     <compiler name="default" spec="scmp.cspec" id="default"/>
   </language> 

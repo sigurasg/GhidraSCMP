@@ -28,7 +28,7 @@ import ghidra.program.model.listing.Instruction;
 
 public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	public DisassemblySCMPTest() {
-		super("SCMP:LE:16:default");
+		super("SCMP:BE:16:default");
 	}
 
 	@Test

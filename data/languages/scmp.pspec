@@ -5,10 +5,13 @@
 <processor_spec>
   <programcounter register="PC"/>
   <register_data>
-    <register name="AF_" group="Alt"/>
-    <register name="BC_" group="Alt"/>
-    <register name="DE_" group="Alt"/>
-    <register name="HL_" group="Alt"/>
+    <register name="AC"/>
+    <register name="SR"/>
+    <register name="E"/>
+    <register name="PC"/>
+    <register name="P1"/>
+    <register name="P2"/>
+    <register name="P3"/>
   </register_data>
   <default_symbols>
     <symbol name="RST0" address="ram:0000" entry="true"/>
