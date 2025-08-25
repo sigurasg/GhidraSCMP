@@ -160,11 +160,32 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0xFA, "CAD 0xe(P2)",0x0E);
 		test(0xFB, "CAD 0xe(P3)",0x0E);
 		test(0xFB, "CAD E(P3)",0x80);
-
+		
 		test(0xFD, "CAD @0xe(P1)",0x0E);
 		test(0xFE, "CAD @0xe(P2)",0x0E);
 		test(0xFF, "CAD @0xe(P3)",0x0E);
 		test(0xFF, "CAD @E(P3)",0x80);
+	}	
+	
+	@Test
+	public void ILD() {
+		test(0xA8, "ILD 0x10", 0x0E);
+		test(0xA9, "ILD 0xe(P1)", 0x0E);
+		test(0xAA, "ILD 0xe(P2)", 0x0E);
+		test(0xAB, "ILD 0xe(P3)", 0x0E);
+	}
+	
+	@Test
+	public void DLD() {
+		test(0xB8, "DLD 0x10", 0x0E);
+		test(0xB9, "DLD 0xe(P1)", 0x0E);
+		test(0xBA, "DLD 0xe(P2)", 0x0E);
+		test(0xBB, "DLD 0xe(P3)", 0x0E);
+	}
+	
+	@Test
+	public void LDE() {
+		test(0x40, "LDE");
 	}
 
 	@Test
@@ -173,7 +194,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0x31, "XPAL P1");
 		test(0x32, "XPAL P2");
 		test(0x33, "XPAL P3");
-	}
+	}	
 
 	@Test
 	public void XPAH() {
@@ -181,7 +202,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0x35, "XPAH P1");
 		test(0x36, "XPAH P2");
 		test(0x37, "XPAH P3");
-	}
+	}	
 
 	@Test
 	public void XPPC() {
@@ -189,11 +210,11 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0x3D, "XPPC P1");
 		test(0x3E, "XPPC P2");
 		test(0x3F, "XPPC P3");
-	}
+	}	
 
 	@Test
-	public void LDE() {
-		test(0x40, "LDE");
+	public void NOP() {
+		test(0x08, "NOP");
 	}
 
 	protected void test(int opCode, String expected, int... args) {

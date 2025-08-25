@@ -122,6 +122,62 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   AC = AC + *EA;
 }
 
+:ILD loc is op2_7 = 0x2A & op_ptr = 0 & op_ptr ; disp8 [ loc = (inst_next + disp8) & 0xFFF; ]{
+  local ea:2 = (inst_next + disp8) & 0xFFFF;
+  *:1 ea = *:1 ea + 1;
+  AC = *:1 ea;
+}
+
+:ILD disp8(op_ptr) is op2_7 = 0x2A & op_ptr ; disp8 {
+  local ea:2 = (op_ptr + disp8) & 0xFFFF;
+  *:1 ea = *:1 ea + 1;
+  AC = *:1 ea;
+}
+
+:DLD loc is op2_7 = 0x2E & op_ptr = 0 & op_ptr ; disp8 [ loc = (inst_next + disp8) & 0xFFF; ]{
+  local ea:2 = (inst_next + disp8) & 0xFFFF;
+  *:1 ea = *:1 ea - 1;
+  AC = *:1 ea;
+}
+
+:DLD disp8(op_ptr) is op2_7 = 0x2E & op_ptr ; disp8 {
+  local ea:2 = (op_ptr + disp8) & 0xFFFF;
+  *:1 ea = *:1 ea - 1;
+  AC = *:1 ea;
+}
+
+
+@if 0
+
+LDI
+ORI
+XRI
+DAI
+ADI
+CAI
+
+JMP
+JP
+JZ
+JNZ
+
+DLY
+@endif
+
+:LDE is op0_7 = 0x40 {
+  AC = E;
+}
+
+@if 0
+XAE
+ANE
+ORE
+XRE
+DAE
+ADE
+CAE
+@endif
+
 :XPAL op_ptr is op2_7 = 0x0C & op_ptr {
   # TODO(siggi): Implement.
 }
@@ -134,7 +190,23 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   # TODO(siggi): Implement.
 }
 
+@if 0
+SIO
+SR
+SRL
+RR
+RRL
 
-:LDE is op0_7 = 0x40 {
-  AC = E;
+HALT
+CCL
+SCL
+DINT
+IEN
+CSA
+CAS
+
+@endif
+
+:NOP is op0_7 = 0x08 {
+  goto inst_next;
 }
