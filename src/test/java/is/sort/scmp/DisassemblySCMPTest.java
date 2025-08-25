@@ -31,9 +31,17 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		super("SCMP:BE:16:default");
 	}
 
+	 @Test
+	 public void LD() {
+		 test(0xC0, "LD 0x10",0x0E);
+		 test(0xC1, "LD 0xe(P1)",0x0E);
+		 test(0xC2, "LD 0xe(P2)",0x0E);
+		 test(0xC3, "LD 0xe(P3)",0x0E);
+	}
+
 	@Test
-	public void LD() {		
-		test(0xC0, "LD 0x0E",0x0E);
+	public void LDE() {
+		test(0x40, "LDE");
 	}
 
 	protected void test(int opCode, String expected, int... args) {
@@ -46,10 +54,9 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 		byte[] bytes = stream.toByteArray();
 		CodeUnit codeUnit = disassemble(bytes);
-		assertTrue(codeUnit instanceof Instruction);
-		assertNotNull(codeUnit);
 
-		System.err.println(codeUnit.toString());
+		assertNotNull(codeUnit);
+		assertTrue(codeUnit instanceof Instruction);
 
 		assertEquals(expected, codeUnit.toString());
 		assertEquals(bytes.length, codeUnit.getLength());

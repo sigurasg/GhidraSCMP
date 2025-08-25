@@ -20,83 +20,77 @@ define register offset=0x10 size=2 [ PC P1 P2 P3 ];
 @define F1_flag   "SR[1,1]"   # F1: User Flag 1
 @define F0_flag   "SR[0,1]"   # F0: User Flag 0
 
-define token opword (16)
-  w_opshort   = (11, 15)
-  w_m         = (10, 10)
-  w_ptr       = (8, 9)
-  w_imm8      = (0, 7)
-  w_disp8     = (0, 7) signed
-;
 
 define token opbyte (8)
-   b_opcode  = (0, 7)
+   op0_7     = (0,7)
    op3_7     = (3,7)
    op_m 	   = (2,2)
    op_ptr    = (0,1)
 ;
+
 
 define token data8 (8)
    imm8		= (0,7)
    disp8	= (0,7) signed
 ;
 
-attach variables [ w_ptr ] [ PC P1 P2 P3 ];
+attach variables [ op_ptr ] [ PC P1 P2 P3 ];
 
 # PC-relative.
-EA: loc is w_m = 0 & w_ptr = 0 & w_disp8 != 0x80; w_disp8 [ loc = inst_next + w_disp8; ] {
-  local ret:2 = (inst_next + w_disp8) & 0xFFF;
+EA: loc is op_m = 0 & op_ptr = 0 ; imm8 != 0x80 & disp8 [ loc = inst_next + disp8; ] {
+  local ret:2 = (inst_next + disp8) & 0xFFF;
   export ret;
 }
 
 # Pointer-relative.
-EA: w_disp8(w_ptr) is w_m = 0; w_disp8; w_ptr {
-  local ret:2 = (w_ptr + w_disp8) & 0xFFF;
+EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
+  local ret:2 = (op_ptr + disp8) & 0xFFF;
   export ret;
 }
 
 # Special case for E-relative.
-EA: "E"(w_ptr) is w_m = 0 & w_disp8 = 0x80; w_ptr {
-  local ret:2 = (w_ptr + sext(E)) & 0xFFF;
+EA: E(op_ptr) is op_m = 0 & op_ptr & E ; imm8 = 0x80 {
+  local ret:2 = (op_ptr + sext(E)) & 0xFFF;
   export ret;
 }
 
-:LD EA is w_opshort = 0x18; EA {
+:LD EA is op3_7 = 0x18 ... & EA {
   AC = *EA;
 }
 
-:ST EA is w_opshort = 0x19; EA {
+@if 0
+:ST EA is op3_7 = 0x19 & EA {
   *EA = AC;
 }
 
-:AND EA is w_opshort = 0x1A; EA {
+:AND EA is op3_7 = 0x1A & EA {
   AC = AC & *EA;
 }
 
-:OR EA is w_opshort = 0x1B; EA {
+:OR EA is op3_7 = 0x1B & EA {
   AC = AC | *EA;
 }
 
-:XOR EA is w_opshort = 0x1C; EA {
+:XOR EA is op3_7 = 0x1C & EA {
   AC = AC ^ *EA;
 }
 
-:DAD EA is w_opshort = 0x1D; EA {
+:DAD EA is op3_7 = 0x1D & EA {
   # TODO(siggi): writeme!
   AC = AC ^ *EA;
 }
 
-:ADD EA is w_opshort = 0x1E; EA {
+:ADD EA is op3_7 = 0x1E & EA {
   # TODO(siggi): fixme!
   AC = AC + *EA;
 }
 
-@if 0
-:LDE b_opcode = 0x40 {
-  AC = E;
+:CAD EA is op3_7 = 0x1F & EA {
+  # TODO(siggi): fixme!
+  AC = AC + *EA;
 }
 @endif
 
-:CAD EA is w_opshort = 0x1F; EA {
-  # TODO(siggi): fixme!
-  AC = AC + *EA;
+:LDE is op0_7 = 0x40 {
+  AC = E;
 }
