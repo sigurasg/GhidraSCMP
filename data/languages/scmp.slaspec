@@ -62,11 +62,28 @@ EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
   export ret;
 }
 
-# Special case for E-relative.
+# Auto-indexed.
+EA: @disp8(op_ptr) is op_m = 1 & op_ptr; imm8 != 0x80 & disp8 {
+  # TODO(siggi): Deal with pre-decrement and post-increment.
+  local ret:2 = (op_ptr + disp8) & 0xFFF;
+  op_ptr = ret;
+  export ret;
+}
+
+# Special cases for E-relative.
 EA: E(op_ptr) is op_m = 0 & op_ptr & E ; imm8 = 0x80 {
   local ret:2 = (op_ptr + sext(E)) & 0xFFF;
   export ret;
 }
+
+EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
+  # TODO(siggi): Deal with pre-decrement and post-increment.
+  local ret:2 = (op_ptr + sext(E)) & 0xFFF;
+  op_ptr = ret;
+  export ret;
+}
+
+
 
 :LD EA is op3_7 = 0x18 ... & EA {
   AC = *EA;
