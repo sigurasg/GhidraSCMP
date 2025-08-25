@@ -184,6 +184,43 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	}
 	
 	@Test
+	public void LDI() {
+		test(0xC4, "LDI 0xff", 0xFF);
+	}
+
+	@Test
+	public void ANI() {
+		test(0xD4, "ANI 0xff", 0xFF);
+	}
+
+	@Test
+	public void ORI() {
+		test(0xDC, "ORI 0xff", 0xFF);
+	}
+
+	@Test
+	public void XRI() {
+		test(0xE4, "XRI 0xff", 0xFF);
+	}
+
+	@Test
+	public void DAI() {
+		test(0xEC, "DAI 0xff", 0xFF);
+	}
+
+	@Test
+	public void ADI() {
+		test(0xF4, "ADI 0xff", 0xFF);
+	}
+
+	@Test
+	public void CAI() {
+		test(0xFC, "CAI 0xff", 0xFF);
+	}
+
+
+
+	@Test
 	public void LDE() {
 		test(0x40, "LDE");
 	}

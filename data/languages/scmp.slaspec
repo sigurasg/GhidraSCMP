@@ -146,15 +146,39 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   AC = *:1 ea;
 }
 
+:LDI imm8 is op0_7 = 0xC4 ; imm8 {
+  AC = imm8;
+}
+
+:ANI imm8 is op0_7 = 0xD4 ; imm8 {
+  AC = AC & imm8;
+}
+
+:ORI imm8 is op0_7 = 0xDC ; imm8 {
+  AC = AC | imm8;
+}
+
+:XRI imm8 is op0_7 = 0xE4 ; imm8 {
+  AC = AC ^ imm8;
+}
+
+:DAI imm8 is op0_7 = 0xEC ; imm8 {
+  # TODO(siggi): Implement.
+  AC = imm8;
+}
+
+:ADI imm8 is op0_7 = 0xF4 ; imm8 {
+  # TODO(siggi): Implement carry.
+  AC = AC + imm8;
+}
+
+:CAI imm8 is op0_7 = 0xFC ; imm8 {
+  # TODO(siggi): Implement.
+  AC = imm8;
+}
 
 @if 0
 
-LDI
-ORI
-XRI
-DAI
-ADI
-CAI
 
 JMP
 JP
