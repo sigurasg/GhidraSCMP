@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.beans.Transient;
 import java.io.ByteArrayOutputStream;
 
 import org.junit.jupiter.api.Test;
@@ -31,13 +32,29 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		super("SCMP:BE:16:default");
 	}
 
-	 @Test
-	 public void LD() {
-		 test(0xC0, "LD 0x10",0x0E);
-		 test(0xC1, "LD 0xe(P1)",0x0E);
-		 test(0xC2, "LD 0xe(P2)",0x0E);
-		 test(0xC3, "LD 0xe(P3)",0x0E);
-		 test(0xC3, "LD E(P3)",0x80);
+
+	@Test
+	public void EA() {
+		// PC-relative.
+		// Zero, positive and negative offsets.
+		test(0xC0, "LD 0x2",0x00);
+		test(0xC0, "LD 0x81",0x7F);
+		// Negative offset should wrap around modulo 0x1000.
+		test(0xC0, "LD 0xf83",0x81);
+
+		// Pointer-relative.
+		test(0xC1, "LD 0x0(P1)",0x00);
+		test(0xC1, "LD 0x7f(P1)",0x7f);
+		test(0xC1, "LD -0x7f(P1)",0x81);
+	}
+
+	@Test
+	public void LD() {
+		test(0xC0, "LD 0x10",0x0E);
+		test(0xC1, "LD 0xe(P1)",0x0E);
+		test(0xC2, "LD 0xe(P2)",0x0E);
+		test(0xC3, "LD 0xe(P3)",0x0E);
+		test(0xC3, "LD E(P3)",0x80);
 	}
 
 	@Test
