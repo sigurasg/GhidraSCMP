@@ -58,38 +58,37 @@ EA: E(op_ptr) is op_m = 0 & op_ptr & E ; imm8 = 0x80 {
   AC = *EA;
 }
 
-@if 0
-:ST EA is op3_7 = 0x19 & EA {
+:ST EA is op3_7 = 0x19 ... & EA {
   *EA = AC;
 }
 
-:AND EA is op3_7 = 0x1A & EA {
+:AND EA is op3_7 = 0x1A ... & EA {
   AC = AC & *EA;
 }
 
-:OR EA is op3_7 = 0x1B & EA {
+:OR EA is op3_7 = 0x1B ... & EA {
   AC = AC | *EA;
 }
 
-:XOR EA is op3_7 = 0x1C & EA {
+:XOR EA is op3_7 = 0x1C ... & EA {
   AC = AC ^ *EA;
 }
 
-:DAD EA is op3_7 = 0x1D & EA {
+:DAD EA is op3_7 = 0x1D ... & EA {
   # TODO(siggi): writeme!
   AC = AC ^ *EA;
 }
 
-:ADD EA is op3_7 = 0x1E & EA {
+:ADD EA is op3_7 = 0x1E ... & EA {
   # TODO(siggi): fixme!
   AC = AC + *EA;
 }
 
-:CAD EA is op3_7 = 0x1F & EA {
+:CAD EA is op3_7 = 0x1F ... & EA {
   # TODO(siggi): fixme!
   AC = AC + *EA;
 }
-@endif
+
 
 :LDE is op0_7 = 0x40 {
   AC = E;
