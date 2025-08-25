@@ -84,6 +84,15 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   export ret;
 }
 
+PTR: loc is op_ptr = 0; imm8 [ loc = (inst_next + imm8) & 0xFFF; ] {
+  local ret:2 = (inst_next + imm8) & 0xFFF;
+  export ret;
+}
+
+PTR: imm8(op_ptr) is op_ptr; imm8 {
+  local ret:2 = (op_ptr + imm8) & 0xFFF;
+  export ret;
+}
 
 # Instructions in order of appearance in the
 # SC/MP Programming and Assembler Manual.
@@ -122,26 +131,14 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   AC = AC + *EA;
 }
 
-:ILD loc is op2_7 = 0x2A & op_ptr = 0 & op_ptr ; disp8 [ loc = (inst_next + disp8) & 0xFFF; ]{
-  local ea:2 = (inst_next + disp8) & 0xFFFF;
+:ILD PTR is op2_7 = 0x2A ... & PTR {
+  local ea:2 = PTR;
   *:1 ea = *:1 ea + 1;
   AC = *:1 ea;
 }
 
-:ILD disp8(op_ptr) is op2_7 = 0x2A & op_ptr ; disp8 {
-  local ea:2 = (op_ptr + disp8) & 0xFFFF;
-  *:1 ea = *:1 ea + 1;
-  AC = *:1 ea;
-}
-
-:DLD loc is op2_7 = 0x2E & op_ptr = 0 & op_ptr ; disp8 [ loc = (inst_next + disp8) & 0xFFF; ]{
-  local ea:2 = (inst_next + disp8) & 0xFFFF;
-  *:1 ea = *:1 ea - 1;
-  AC = *:1 ea;
-}
-
-:DLD disp8(op_ptr) is op2_7 = 0x2E & op_ptr ; disp8 {
-  local ea:2 = (op_ptr + disp8) & 0xFFFF;
+:DLD PTR is op2_7 = 0x24 ... & PTR {
+  local ea:2 = PTR;
   *:1 ea = *:1 ea - 1;
   AC = *:1 ea;
 }
@@ -178,7 +175,6 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
 }
 
 @if 0
-
 
 JMP
 JP
