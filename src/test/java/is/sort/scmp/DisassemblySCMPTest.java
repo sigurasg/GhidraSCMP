@@ -168,6 +168,30 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	}
 
 	@Test
+	public void XPAL() {
+		test(0x30, "XPAL PC");
+		test(0x31, "XPAL P1");
+		test(0x32, "XPAL P2");
+		test(0x33, "XPAL P3");
+	}
+
+	@Test
+	public void XPAH() {
+		test(0x34, "XPAH PC");
+		test(0x35, "XPAH P1");
+		test(0x36, "XPAH P2");
+		test(0x37, "XPAH P3");
+	}
+
+	@Test
+	public void XPPC() {
+		test(0x3C, "XPPC PC");
+		test(0x3D, "XPPC P1");
+		test(0x3E, "XPPC P2");
+		test(0x3F, "XPPC P3");
+	}
+
+	@Test
 	public void LDE() {
 		test(0x40, "LDE");
 	}

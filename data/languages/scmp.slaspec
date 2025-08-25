@@ -37,6 +37,7 @@ define register offset=0x10 size=2 [ PC P1 P2 P3 ];
 
 define token opbyte (8)
    op0_7     = (0,7)
+   op2_7     = (2,7)
    op3_7     = (3,7)
    op_m 	   = (2,2)
    op_ptr    = (0,1)
@@ -84,7 +85,8 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
 }
 
 
-
+# Instructions in order of appearance in the
+# SC/MP Programming and Assembler Manual.
 :LD EA is op3_7 = 0x18 ... & EA {
   AC = *EA;
 }
@@ -119,6 +121,19 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   # TODO(siggi): fixme!
   AC = AC + *EA;
 }
+
+:XPAL op_ptr is op2_7 = 0x0C & op_ptr {
+  # TODO(siggi): Implement.
+}
+
+:XPAH op_ptr is op2_7 = 0x0D & op_ptr {
+  # TODO(siggi): Implement.
+}
+
+:XPPC op_ptr is op2_7 = 0x0F & op_ptr {
+  # TODO(siggi): Implement.
+}
+
 
 :LDE is op0_7 = 0x40 {
   AC = E;
