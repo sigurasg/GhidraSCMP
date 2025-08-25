@@ -178,11 +178,28 @@ PTR: imm8(op_ptr) is op_ptr; imm8 {
   goto [PTR];
 }
 
-@if 0
-JP
-JZ
-JNZ
+:JP PTR is op2_7 = 0x25 ... & PTR {
+  if (AC & 0x80)
+    goto <nojmp>;
+  goto [PTR];
+  <nojmp>
+}
 
+:JZ PTR is op2_7 = 0x26 ... & PTR {
+  if (AC != 0)
+    goto <nojmp>;
+  goto [PTR];
+  <nojmp>
+}
+
+:JNZ PTR is op2_7 = 0x27 ... & PTR {
+  if (AC == 0)
+    goto <nojmp>;
+  goto [PTR];
+  <nojmp>
+}
+
+@if 0
 DLY
 @endif
 
