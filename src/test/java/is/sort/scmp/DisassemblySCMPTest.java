@@ -251,10 +251,24 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	}
 
 	@Test
+	public void DLY() {
+		test(0x8F, "DLY");
+	}
+	
+	@Test
 	public void LDE() {
 		test(0x40, "LDE");
 	}
 
+/*
+	XAE
+	ANE
+	ORE
+	XRE
+	DAE
+	ADE
+	CAE
+*/
 	@Test
 	public void XPAL() {
 		test(0x30, "XPAL PC");
