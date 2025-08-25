@@ -199,9 +199,10 @@ PTR: imm8(op_ptr) is op_ptr; imm8 {
   <nojmp>
 }
 
-@if 0
-DLY
-@endif
+:DLY is op0_7 = 0x8F {
+  # Just a NOP for our purposes.
+  goto inst_next;
+}
 
 :LDE is op0_7 = 0x40 {
   AC = E;
