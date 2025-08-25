@@ -137,7 +137,7 @@ PTR: imm8(op_ptr) is op_ptr; imm8 {
   AC = *:1 ea;
 }
 
-:DLD PTR is op2_7 = 0x24 ... & PTR {
+:DLD PTR is op2_7 = 0x2E ... & PTR {
   local ea:2 = PTR;
   *:1 ea = *:1 ea - 1;
   AC = *:1 ea;
@@ -174,9 +174,11 @@ PTR: imm8(op_ptr) is op_ptr; imm8 {
   AC = imm8;
 }
 
-@if 0
+:JMP PTR is op2_7 = 0x24 ... & PTR {
+  goto [PTR];
+}
 
-JMP
+@if 0
 JP
 JZ
 JNZ

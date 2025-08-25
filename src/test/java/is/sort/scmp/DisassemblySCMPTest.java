@@ -218,7 +218,13 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0xFC, "CAI 0xff", 0xFF);
 	}
 
-
+	@Test
+	public void JMP() {
+		test(0x90, "JMP 0x10", 0x0E);
+		test(0x91, "JMP 0xe(P1)", 0x0E);
+		test(0x92, "JMP 0xe(P2)", 0x0E);
+		test(0x93, "JMP 0xe(P3)", 0x0E);
+	}
 
 	@Test
 	public void LDE() {
