@@ -251,21 +251,53 @@ PTR: imm8(op_ptr) is op_ptr; imm8 {
   # TODO(siggi): Implement.
 }
 
-@if 0
-SIO
-SR
-SRL
-RR
-RRL
+:SIO is op0_7 = 0x19 {
+  # TODO(siggi}: Implement me.
+}
 
-HALT
-CCL
-SCL
-DINT
-IEN
-CSA
-CAS
-@endif
+:SR is op0_7 = 0x1C {
+  # TODO(siggi}: Implement me.
+}
+
+:SRL is op0_7 = 0x1D {
+  # TODO(siggi}: Implement me.
+}
+
+:RR is op0_7 = 0x1E {
+  # TODO(siggi}: Implement me.
+}
+
+:RRL is op0_7 = 0x1F {
+  # TODO(siggi}: Implement me.
+}
+
+:HALT is op0_7 = 0x00 {
+# TODO(siggi}: Implement me.
+}
+
+:CCL is op0_7 = 0x02 {
+# TODO(siggi}: Implement me.
+}
+
+:SCL is op0_7 = 0x03 {
+# TODO(siggi}: Implement me.
+}
+
+:DINT is op0_7 = 0x04 {
+# TODO(siggi}: Implement me.
+}
+
+:IEN is op0_7 = 0x5 {
+# TODO(siggi}: Implement me.
+}
+
+:CSA is op0_7 = 0x06 {
+# TODO(siggi}: Implement me.
+}
+
+:CAS is op0_7 = 0x07 {
+# TODO(siggi}: Implement me.
+}
 
 :NOP is op0_7 = 0x08 {
   goto inst_next;

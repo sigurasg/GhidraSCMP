@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.beans.Transient;
 import java.io.ByteArrayOutputStream;
 
+import javax.management.relation.RoleResult;
+
 import org.junit.jupiter.api.Test;
 
 import ghidra.program.model.listing.CodeUnit;
@@ -265,7 +267,6 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0x01, "XAE");
 	}
 
-
 	@Test
 	public void ANE() {
 		test(0x50, "ANE");
@@ -319,6 +320,66 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0x3E, "XPPC P2");
 		test(0x3F, "XPPC P3");
 	}	
+
+	@Test
+	public void SIO() {
+		test(0x19, "SIO");
+	}
+
+	@Test
+	public void SR() {
+		test(0x1C, "SR");
+	}
+
+	@Test
+	public void SRL() {
+		test(0x1D, "SRL");
+	}
+
+	@Test
+	public void RR() {
+		test(0x1E, "RR");
+	}
+
+	@Test
+	public void RRL() {
+		test(0x1F, "RRL");
+	}
+	
+	@Test
+	public void HALT() {
+		test(0x00, "HALT");
+	}
+
+	@Test
+	public void CCL() {
+		test(0x02, "CCL");
+	}
+
+	@Test
+	public void SCL() {
+		test(0x03, "SCL");
+	}
+
+	@Test
+	public void DINT() {
+		test(0x04, "DINT");
+	}
+	
+	@Test
+	public void IEN() {
+		test(0x05, "IEN");
+	}
+	
+	@Test
+	public void CSA() {
+		test(0x06, "CSA");
+	}
+
+	@Test
+	public void CAS() {
+		test(0x07, "CAS");
+	}
 
 	@Test
 	public void NOP() {
