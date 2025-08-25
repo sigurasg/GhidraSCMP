@@ -208,15 +208,36 @@ PTR: imm8(op_ptr) is op_ptr; imm8 {
   AC = E;
 }
 
-@if 0
-XAE
-ANE
-ORE
-XRE
-DAE
-ADE
-CAE
-@endif
+:XAE is op0_7 = 0x01 {
+  local tmp:1 = AC;
+  E = AC;
+  AC = tmp;
+}
+
+:ANE is op0_7 = 0x50 {
+  AC = AC & E;
+}
+
+:ORE is op0_7 = 0x58 {
+  AC = AC | E;
+}
+
+:XRE is op0_7 = 0x60 {
+  AC = AC ^ E;
+}
+
+:DAE is op0_7 = 0x68 {
+  # TODO(siggi): Implement me.
+}
+
+:ADE is op0_7 = 0x70 {
+  # TODO(siggi): Implement me.
+  AC = AC + E;
+}
+
+:CAE is op0_7 = 0x78 {
+  # TODO(siggi): Implement me.
+}
 
 :XPAL op_ptr is op2_7 = 0x0C & op_ptr {
   # TODO(siggi): Implement.

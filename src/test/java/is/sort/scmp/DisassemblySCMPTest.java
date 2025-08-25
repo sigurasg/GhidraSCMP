@@ -260,15 +260,42 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0x40, "LDE");
 	}
 
-/*
-	XAE
-	ANE
-	ORE
-	XRE
-	DAE
-	ADE
-	CAE
-*/
+	@Test
+	public void XAE() {
+		test(0x01, "XAE");
+	}
+
+
+	@Test
+	public void ANE() {
+		test(0x50, "ANE");
+	}
+
+	@Test
+	public void ORE() {
+		test(0x58, "ORE");
+	}
+
+	@Test
+	public void XRE() {
+		test(0x60, "XRE");
+	}
+
+	@Test
+	public void DAE() {
+		test(0x68, "DAE");
+	}
+
+		@Test
+	public void ADE() {
+		test(0x70, "ADE");
+	}
+
+	@Test
+	public void CAE() {
+		test(0x78, "CAE");
+	}
+
 	@Test
 	public void XPAL() {
 		test(0x30, "XPAL PC");
