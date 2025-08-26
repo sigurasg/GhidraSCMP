@@ -51,35 +51,45 @@ define token data8 (8)
 
 attach variables [ op_ptr ] [ PC P1 P2 P3 ];
 
+macro dispEa(dst, reg, disp) {
+  dst = reg & 0xF000;
+  dst = dst | ((reg + disp) & 0x0FFF);
+}
+
 # PC-relative.
 EA: loc is op_m = 0 & op_ptr = 0 ; imm8 != 0x80 & disp8 [ loc = (inst_next + disp8) & 0xFFF; ] {
-  local ret:2 = (inst_next + disp8) & 0xFFF;
+  local ret:2;
+  dispEa(ret, inst_next, disp8);
   export ret;
 }
 
 # Pointer-relative.
 EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
-  local ret:2 = (op_ptr + disp8) & 0xFFF;
+  local ret:2;
+  dispEa(ret, op_ptr, disp8);
   export ret;
 }
 
 # Auto-indexed.
 EA: @disp8(op_ptr) is op_m = 1 & op_ptr; imm8 != 0x80 & disp8 {
   # TODO(siggi): Deal with pre-decrement and post-increment.
-  local ret:2 = (op_ptr + disp8) & 0xFFF;
+  local ret:2;
+  dispEa(ret, op_ptr, disp8);
   op_ptr = ret;
   export ret;
 }
 
 # Special cases for E-relative.
 EA: E(op_ptr) is op_m = 0 & op_ptr & E ; imm8 = 0x80 {
-  local ret:2 = (op_ptr + sext(E)) & 0xFFF;
+  local ret:2;
+  dispEa(ret, op_ptr, sext(E));
   export ret;
 }
 
 EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   # TODO(siggi): Deal with pre-decrement and post-increment.
-  local ret:2 = (op_ptr + sext(E)) & 0xFFF;
+  local ret:2;
+  dispEa(ret, op_ptr, sext(E));
   op_ptr = ret;
   export ret;
 }
