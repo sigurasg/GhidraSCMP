@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- See Relax specification: Ghidra/Framework/SoftwareModeling/data/languages/processor_spec.rxg -->
+
+<processor_spec>
+  <programcounter register="PC"/>
+  <register_data>
+    <register name="AC"/>
+    <register name="SR"/>
+    <register name="E"/>
+    <register name="PC"/>
+    <register name="P1"/>
+    <register name="P2"/>
+    <register name="P3"/>
+  </register_data>
+  <default_symbols>
+    <symbol name="RST" address="ram:0000" entry="true"/>
+  </default_symbols>
+</processor_spec>

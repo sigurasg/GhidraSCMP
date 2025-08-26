@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- See Relax specification: Ghidra/Framework/SoftwareModeling/data/languages/language_definitions.rxg -->
+
+<language_definitions>
+  <language processor="SC/MP"
+            endian="big"
+            size="16"
+            variant="default"
+            version="1.0"
+            slafile="scmp.sla"
+            processorspec="scmp.pspec"
+            id="SCMP:BE:16:default">
+    <description>A Language Module for the National Semiconductor SC/MP Processor</description>
+    <compiler name="default" spec="scmp.cspec" id="default"/>
+  </language> 
+</language_definitions>

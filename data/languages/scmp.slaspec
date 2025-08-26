@@ -1,0 +1,304 @@
+# Copyright 2025 Sigurdur Asgeirsson <siggi@sort.is>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Sleigh specification file for the SC/MP Processor
+
+define endian=big;
+define alignment=1;
+
+define space ram     type=ram_space      size=2  default;
+
+define space register type=register_space size=1;
+
+define register offset=0x00 size=1 [ AC SR E ];
+define register offset=0x10 size=2 [ PC P1 P2 P3 ];
+
+# Flag bits
+@define CYL_flag  "SR[7,1]"   # CY/L: Carry/lINK
+@define OV_flag   "SR[6,1]"   # OV: Overflow
+@define SB_flag   "SR[5,1]"   # SB: Sense Bit B
+@define SA_flag   "SR[4,1]"   # SA: Sense Bit 1
+@define IE_flag   "SR[3,1]"   # IE: Interrupt Enable
+@define F2_flag   "SR[2,1]"   # F2: User Flag 2
+@define F1_flag   "SR[1,1]"   # F1: User Flag 1
+@define F0_flag   "SR[0,1]"   # F0: User Flag 0
+
+
+define token opbyte (8)
+   op0_7     = (0,7)
+   op2_7     = (2,7)
+   op3_7     = (3,7)
+   op_m 	   = (2,2)
+   op_ptr    = (0,1)
+;
+
+
+define token data8 (8)
+   imm8		= (0,7)
+   disp8	= (0,7) signed
+;
+
+attach variables [ op_ptr ] [ PC P1 P2 P3 ];
+
+# PC-relative.
+EA: loc is op_m = 0 & op_ptr = 0 ; imm8 != 0x80 & disp8 [ loc = (inst_next + disp8) & 0xFFF; ] {
+  local ret:2 = (inst_next + disp8) & 0xFFF;
+  export ret;
+}
+
+# Pointer-relative.
+EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
+  local ret:2 = (op_ptr + disp8) & 0xFFF;
+  export ret;
+}
+
+# Auto-indexed.
+EA: @disp8(op_ptr) is op_m = 1 & op_ptr; imm8 != 0x80 & disp8 {
+  # TODO(siggi): Deal with pre-decrement and post-increment.
+  local ret:2 = (op_ptr + disp8) & 0xFFF;
+  op_ptr = ret;
+  export ret;
+}
+
+# Special cases for E-relative.
+EA: E(op_ptr) is op_m = 0 & op_ptr & E ; imm8 = 0x80 {
+  local ret:2 = (op_ptr + sext(E)) & 0xFFF;
+  export ret;
+}
+
+EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
+  # TODO(siggi): Deal with pre-decrement and post-increment.
+  local ret:2 = (op_ptr + sext(E)) & 0xFFF;
+  op_ptr = ret;
+  export ret;
+}
+
+PTR: loc is op_ptr = 0; imm8 [ loc = (inst_next + imm8) & 0xFFF; ] {
+  local ret:2 = (inst_next + imm8) & 0xFFF;
+  export ret;
+}
+
+PTR: imm8(op_ptr) is op_ptr; imm8 {
+  local ret:2 = (op_ptr + imm8) & 0xFFF;
+  export ret;
+}
+
+# Instructions in order of appearance in the
+# SC/MP Programming and Assembler Manual.
+:LD EA is op3_7 = 0x18 ... & EA {
+  AC = *EA;
+}
+
+:ST EA is op3_7 = 0x19 ... & EA {
+  *EA = AC;
+}
+
+:AND EA is op3_7 = 0x1A ... & EA {
+  AC = AC & *EA;
+}
+
+:OR EA is op3_7 = 0x1B ... & EA {
+  AC = AC | *EA;
+}
+
+:XOR EA is op3_7 = 0x1C ... & EA {
+  AC = AC ^ *EA;
+}
+
+:DAD EA is op3_7 = 0x1D ... & EA {
+  # TODO(siggi): writeme!
+  AC = AC ^ *EA;
+}
+
+:ADD EA is op3_7 = 0x1E ... & EA {
+  # TODO(siggi): fixme!
+  AC = AC + *EA;
+}
+
+:CAD EA is op3_7 = 0x1F ... & EA {
+  # TODO(siggi): fixme!
+  AC = AC + *EA;
+}
+
+:ILD PTR is op2_7 = 0x2A ... & PTR {
+  local ea:2 = PTR;
+  *:1 ea = *:1 ea + 1;
+  AC = *:1 ea;
+}
+
+:DLD PTR is op2_7 = 0x2E ... & PTR {
+  local ea:2 = PTR;
+  *:1 ea = *:1 ea - 1;
+  AC = *:1 ea;
+}
+
+:LDI imm8 is op0_7 = 0xC4 ; imm8 {
+  AC = imm8;
+}
+
+:ANI imm8 is op0_7 = 0xD4 ; imm8 {
+  AC = AC & imm8;
+}
+
+:ORI imm8 is op0_7 = 0xDC ; imm8 {
+  AC = AC | imm8;
+}
+
+:XRI imm8 is op0_7 = 0xE4 ; imm8 {
+  AC = AC ^ imm8;
+}
+
+:DAI imm8 is op0_7 = 0xEC ; imm8 {
+  # TODO(siggi): Implement.
+  AC = imm8;
+}
+
+:ADI imm8 is op0_7 = 0xF4 ; imm8 {
+  # TODO(siggi): Implement carry.
+  AC = AC + imm8;
+}
+
+:CAI imm8 is op0_7 = 0xFC ; imm8 {
+  # TODO(siggi): Implement.
+  AC = imm8;
+}
+
+:JMP PTR is op2_7 = 0x24 ... & PTR {
+  goto [PTR];
+}
+
+:JP PTR is op2_7 = 0x25 ... & PTR {
+  if (AC & 0x80)
+    goto <nojmp>;
+  goto [PTR];
+  <nojmp>
+}
+
+:JZ PTR is op2_7 = 0x26 ... & PTR {
+  if (AC != 0)
+    goto <nojmp>;
+  goto [PTR];
+  <nojmp>
+}
+
+:JNZ PTR is op2_7 = 0x27 ... & PTR {
+  if (AC == 0)
+    goto <nojmp>;
+  goto [PTR];
+  <nojmp>
+}
+
+:DLY is op0_7 = 0x8F {
+  # Just a NOP for our purposes.
+  goto inst_next;
+}
+
+:LDE is op0_7 = 0x40 {
+  AC = E;
+}
+
+:XAE is op0_7 = 0x01 {
+  local tmp:1 = AC;
+  E = AC;
+  AC = tmp;
+}
+
+:ANE is op0_7 = 0x50 {
+  AC = AC & E;
+}
+
+:ORE is op0_7 = 0x58 {
+  AC = AC | E;
+}
+
+:XRE is op0_7 = 0x60 {
+  AC = AC ^ E;
+}
+
+:DAE is op0_7 = 0x68 {
+  # TODO(siggi): Implement me.
+}
+
+:ADE is op0_7 = 0x70 {
+  # TODO(siggi): Implement me.
+  AC = AC + E;
+}
+
+:CAE is op0_7 = 0x78 {
+  # TODO(siggi): Implement me.
+}
+
+:XPAL op_ptr is op2_7 = 0x0C & op_ptr {
+  # TODO(siggi): Implement.
+}
+
+:XPAH op_ptr is op2_7 = 0x0D & op_ptr {
+  # TODO(siggi): Implement.
+}
+
+:XPPC op_ptr is op2_7 = 0x0F & op_ptr {
+  # TODO(siggi): Implement.
+}
+
+:SIO is op0_7 = 0x19 {
+  # TODO(siggi}: Implement me.
+}
+
+:SR is op0_7 = 0x1C {
+  # TODO(siggi}: Implement me.
+}
+
+:SRL is op0_7 = 0x1D {
+  # TODO(siggi}: Implement me.
+}
+
+:RR is op0_7 = 0x1E {
+  # TODO(siggi}: Implement me.
+}
+
+:RRL is op0_7 = 0x1F {
+  # TODO(siggi}: Implement me.
+}
+
+:HALT is op0_7 = 0x00 {
+# TODO(siggi}: Implement me.
+}
+
+:CCL is op0_7 = 0x02 {
+# TODO(siggi}: Implement me.
+}
+
+:SCL is op0_7 = 0x03 {
+# TODO(siggi}: Implement me.
+}
+
+:DINT is op0_7 = 0x04 {
+# TODO(siggi}: Implement me.
+}
+
+:IEN is op0_7 = 0x5 {
+# TODO(siggi}: Implement me.
+}
+
+:CSA is op0_7 = 0x06 {
+# TODO(siggi}: Implement me.
+}
+
+:CAS is op0_7 = 0x07 {
+# TODO(siggi}: Implement me.
+}
+
+:NOP is op0_7 = 0x08 {
+  goto inst_next;
+}

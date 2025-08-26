@@ -1,1 +1,13 @@
+*.bak
+*.log
+*.tmp
+*.swp
+*~
+.gradle/
+build/
+dist/
 
+*.sla
+
+/bin/
+/lib/
