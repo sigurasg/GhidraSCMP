@@ -90,14 +90,9 @@ task copySleighSources(type: Sync) {
     dependsOn(compileSleigh)
 }
 
-tasks.named('buildExtension') {
-    from('build/data') {
-        into "$project.name/data"
-    }
 
-    dependsOn('copySleighSources')
-    dependsOn('compileSleigh')
-}
+// tasks.named('buildExtension') {
+// }
 
 tasks.named('test') {
     useJUnitPlatform()
@@ -106,4 +101,24 @@ tasks.named('test') {
 }
 
 // Exclude additional files from the built extension
-// Ex: buildExtension.exclude '.idea/**'
+buildExtension {
+    from('build/data') {
+        into "$project.name/data"
+    }
+
+    exclude 'data/**'
+    exclude '.vscode/**'
+    exclude '.devcontainer/**'
+    exclude 'gradle.properties'
+    exclude '.github/**'
+    exclude 'gradle/**'
+    exclude 'eclipse/**'
+
+    dependsOn('compileSleigh')
+    dependsOn(copySleighSources)
+}
+
+// And don't ship the tests.
+zipSource {
+    exclude 'src/test/**'
+}
