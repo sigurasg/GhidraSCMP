@@ -43,4 +43,77 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assertEquals(getP3(), 0x0030);
 		assertEquals(getPC(), 0X0001);
 	}
+
+	@Test
+	public void JMP_PCRel() {
+		// PC-relative JMP.
+		write(0x0100, 0x90, 0x10);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0112);
+	}
+
+	public void JMP_P1Rel() {
+		// P1-relative JMP.
+		setP1(0x0200);
+		write(0x0100, 0x91, 0x12);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0212);
+	}
+
+	public void JP() {
+		write(0x100, 0x94, 0x10);
+
+		// Test zero.
+		setAC(0x00);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0112);
+
+		// Test positive
+		setAC(0x7F);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0112);
+
+		// Test negative.
+		setAC(0x81);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0102);
+	}
+
+	public void JZ() {
+		write(0x100, 0x98, 0x10);
+
+		// Test zero.
+		setAC(0x00);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0112);
+
+		// Test positive
+		setAC(0x7F);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0102);
+
+		// Test negative.
+		setAC(0x81);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0102);
+	}
+
+	public void JNZ() {
+		write(0x100, 0x98, 0x10);
+
+		// Test zero.
+		setAC(0x00);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0102);
+
+		// Test positive
+		setAC(0x7F);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0112);
+
+		// Test negative.
+		setAC(0x81);
+		stepFrom(0x0100);
+		assertEquals(getPC(), 0x0112);
+	}
 }
