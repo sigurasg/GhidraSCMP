@@ -95,12 +95,14 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
 }
 
 PTR: loc is op_ptr = 0; imm8 [ loc = (inst_next + imm8) & 0xFFF; ] {
-  local ret:2 = (inst_next + imm8) & 0xFFF;
+  local ret:2;
+  dispEa(ret, inst_next, imm8);
   export ret;
 }
 
 PTR: imm8(op_ptr) is op_ptr; imm8 {
-  local ret:2 = (op_ptr + imm8) & 0xFFF;
+  local ret:2;
+  dispEa(ret, op_ptr, imm8);
   export ret;
 }
 
