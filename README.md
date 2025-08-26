@@ -5,7 +5,7 @@ SC/MP processor.
 
 ## Features
 
-* Contains a language spec for the SM/MP processor.
+* Contains a language spec for the SC/MP processor.
 
 ## How to install
 1. Download a [prebuilt GhidraSCMP release](https://github.com/sigurasg/GhidraSCMP/releases), or build it yourself.
