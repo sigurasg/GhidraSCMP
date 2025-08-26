@@ -57,7 +57,8 @@ macro dispEa(dst, reg, disp) {
 }
 
 # PC-relative.
-EA: loc is op_m = 0 & op_ptr = 0 ; imm8 != 0x80 & disp8 [ loc = (inst_next + disp8) & 0xFFF; ] {
+EA: loc is op_m = 0 & op_ptr = 0 ; imm8 != 0x80 & disp8
+    [ loc = (inst_next & 0xF000) | ((inst_next + disp8) & 0xFFF); ] {
   local ret:2;
   dispEa(ret, inst_next, disp8);
   export ret;
@@ -94,15 +95,16 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   export ret;
 }
 
-PTR: loc is op_ptr = 0; imm8 [ loc = (inst_next + imm8) & 0xFFF; ] {
+PTR: loc is op_ptr = 0; disp8
+    [ loc = (inst_next & 0xF000) | ((inst_next + disp8) & 0x0FFF); ] {
   local ret:2;
-  dispEa(ret, inst_next, imm8);
+  dispEa(ret, inst_next, disp8);
   export ret;
 }
 
-PTR: imm8(op_ptr) is op_ptr; imm8 {
+PTR: disp8(op_ptr) is op_ptr; disp8 {
   local ret:2;
-  dispEa(ret, op_ptr, imm8);
+  dispEa(ret, op_ptr, disp8);
   export ret;
 }
 

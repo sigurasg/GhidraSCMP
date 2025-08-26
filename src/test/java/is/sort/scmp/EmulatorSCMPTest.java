@@ -57,10 +57,15 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	public void JMP_PCRel() {
 		int PC = 0x8100;
 		// PC-relative JMP.
-		write(PC, 0x90, 0x10);
+		write(PC, 0x90, 0x10, 0x90, 0xFF);
 		stepFrom(PC);
 		assertEquals(getPC(), PC + 0x12);
+
+		PC += 2;
+		stepFrom(PC);
+		assertEquals(getPC(), PC + 0x01);
 	}
+
 
 	public void JMP_P1Rel() {
 		// P1-relative JMP.
