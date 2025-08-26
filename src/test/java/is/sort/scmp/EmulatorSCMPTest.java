@@ -20,45 +20,27 @@ import org.junit.jupiter.api.Test;
 
 public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	public EmulatorSCMPTest() {
-		super("SCMP:LE:16:default");
+		super("SCMP:BE:16:default");
 	}
 
-//	@Test
+	@Test
 	public void NOP() {
-		setA(0x00);
-		setB(0x00);
-		setCC(0x00);
-		setX(0x0000);
-		setS(0x0800);
+		setAC(0x00);
+		setSR(0x00);
+		setE(0x00);
+		setP1(0x0010);
+		setP2(0x0020);
+		setP3(0x0030);
 
-		write(0x0000, 0x01);
+		write(0x0000, 0x00);
 		stepFrom(0x000);
 
-		assertEquals(getA(), 0x00);
-		assertEquals(getB(), 0x00);
-		assertEquals(getCC(), 0x00);
-		assertEquals(getX(), 0x0000);
-		assertEquals(getS(), 0x0800);
-		assertEquals(0x0001, getPC());
-	}
-
-//	@Test
-	public void CPX() {
-		write(0x0000, 0x8C, 0x12, 0x34);
-
-		// Test the equals case.
-		setX(0x1234);
-		setCC(0x00);
-		stepFrom(0x0000);
-		assertEquals(0x1234, getX());
-		assertEquals(CC.Z, getCC());
-
-		// Test the negative overflow case, as per the
-		// programming manual the carry flag is
-		// unaffected.
-		setX(0x1233);
-		setCC(0x00);
-		stepFrom(0x0000);
-		assertEquals(CC.N, getCC());
+		assertEquals(getAC(), 0x00);
+		assertEquals(getSR(), 0x00);
+		assertEquals(getE(), 0x00);
+		assertEquals(getP1(), 0x0010);
+		assertEquals(getP2(), 0x0020);
+		assertEquals(getP3(), 0x0030);
+		assertEquals(getPC(), 0X0001);
 	}
 }

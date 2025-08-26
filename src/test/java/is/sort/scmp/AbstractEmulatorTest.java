@@ -54,60 +54,60 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		}
 	}
 
-	protected void setA(int value) {
-		emulator.writeRegister("A", value);
+	protected void setAC(int value) {
+		emulator.writeRegister("AC", value);
 	}
 
-	protected void setB(int value) {
-		emulator.writeRegister("B", value);
+	protected void setSR(int value) {
+		emulator.writeRegister("SR", value);
 	}
 
-	protected void setD(int value) {
-		emulator.writeRegister("D", value);
-	}
-
-	protected void setCC(int value) {
-		emulator.writeRegister("CC", value);
-	}
-
-	protected void setX(int value) {
-		emulator.writeRegister("X", value);
-	}
-
-	protected void setS(int value) {
-		emulator.writeRegister("S", value);
+	protected void setE(int value) {
+		emulator.writeRegister("E", value);
 	}
 
 	protected void setPC(int value) {
 		emulator.writeRegister("PC", value);
 	}
 
-	protected int getA() {
-		return emulator.readRegister("A").intValue();
+	protected void setP1(int value) {
+		emulator.writeRegister("P1", value);
 	}
 
-	protected int getB() {
-		return emulator.readRegister("B").intValue();
+	protected void setP2(int value) {
+		emulator.writeRegister("P2", value);
 	}
 
-	protected int getD() {
-		return emulator.readRegister("D").intValue();
+	protected void setP3(int value) {
+		emulator.writeRegister("P3", value);
 	}
 
-	protected int getCC() {
-		return emulator.readRegister("CC").intValue();
+	protected int getAC() {
+		return emulator.readRegister("AC").intValue();
 	}
 
-	protected int getX() {
-		return emulator.readRegister("X").intValue();
+	protected int getSR() {
+		return emulator.readRegister("SR").intValue();
 	}
 
-	protected int getS() {
-		return emulator.readRegister("S").intValue();
+	protected int getE() {
+		return emulator.readRegister("E").intValue();
 	}
 
 	protected int getPC() {
 		return emulator.readRegister("PC").intValue();
+	}
+
+	protected int getP1() {
+		return emulator.readRegister("P1").intValue();
+	}
+
+	protected int getP2() {
+		return emulator.readRegister("P2").intValue();
+	}
+
+	protected int getP3() {
+		return emulator.readRegister("P3").intValue();
 	}
 
 	protected void write(int addr, int... bytes) {
