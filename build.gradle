@@ -95,6 +95,7 @@ tasks.named('buildExtension') {
         into "$project.name/data"
     }
 
+    dependsOn('copySleighSources')
     dependsOn('compileSleigh')
 }
 
