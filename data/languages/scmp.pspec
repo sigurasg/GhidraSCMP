@@ -14,13 +14,6 @@
     <register name="P3"/>
   </register_data>
   <default_symbols>
-    <symbol name="RST0" address="ram:0000" entry="true"/>
-    <symbol name="RST1" address="ram:0008" entry="false"/>
-    <symbol name="RST2" address="ram:0010" entry="false"/>
-    <symbol name="RST3" address="ram:0018" entry="false"/>
-    <symbol name="RST4" address="ram:0020" entry="false"/>
-    <symbol name="RST5" address="ram:0028" entry="false"/>
-    <symbol name="RST6" address="ram:0030" entry="false"/>
-    <symbol name="RST7" address="ram:0038" entry="false"/>
+    <symbol name="RST" address="ram:0000" entry="true"/>
   </default_symbols>
 </processor_spec>
