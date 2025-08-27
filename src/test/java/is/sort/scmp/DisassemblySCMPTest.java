@@ -394,9 +394,9 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("NOP", 0x08);
 	}
 
-	protected void assertDisassemblesAt(String expected, int addr, int... args) {
+	protected void assertDisassemblesAt(String expected, int addr, int... code) {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		for (int arg : args) {
+		for (int arg : code) {
 			stream.write(arg);
 		}
 
@@ -410,7 +410,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertEquals(bytes.length, codeUnit.getLength());
 	}
 
-	protected void assertDisassemblesTo(String expected, int... args) {
-		assertDisassemblesAt(expected, 0, args);
+	protected void assertDisassemblesTo(String expected, int... code) {
+		assertDisassemblesAt(expected, 0, code);
 	}
 }
