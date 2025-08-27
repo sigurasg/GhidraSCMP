@@ -43,6 +43,11 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		// Negative offset should wrap around modulo 0x1000.
 		assertDisassemblesTo("LD 0xf83", 0xC0, 0x81);
 
+		// Test wraparound.
+		assertDisassemblesAt("LD 0x7000", 0x7FFE, 0xC0, 0x00);
+		assertDisassemblesAt("LD 0x707f", 0x7FFE, 0xC0, 0x7F);
+		assertDisassemblesAt("LD 0x8f83", 0X8000, 0xC0, 0x81);
+
 		// Pointer-Relative.
 		assertDisassemblesTo("LD 0x0(P1)", 0xC1, 0x00);
 		assertDisassemblesTo("LD 0x7f(P1)", 0xC1, 0x7f);
@@ -54,8 +59,6 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("LD @0x7f(P1)", 0xC5, 0x7f);
 		assertDisassemblesTo("LD @-0x7f(P1)", 0xC5, 0x81);
 		assertDisassemblesTo("LD @E(P1)", 0xC5, 0x80);
-
-		// TODO(siggi): Test PC-relative wraparounds.
 	}
 
 	@Test
@@ -228,7 +231,9 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("JMP 0xe(P2)", 0x92, 0x0E);
 		assertDisassemblesTo("JMP 0xe(P3)", 0x93, 0x0E);
 
-		// TODO(siggi): Test PC-relative wraparounds.
+		// Test wraparound.
+		assertDisassemblesAt("JMP 0x700e", 0x7FFE, 0x90, 0x0E);
+		assertDisassemblesAt("JMP 0x7f83", 0x7000, 0x90, 0x81);
 	}
 
 	@Test
