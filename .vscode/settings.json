@@ -3,7 +3,7 @@
   "java.import.gradle.enabled": false,
   "java.import.gradle.wrapper.enabled": false,
   "java.import.gradle.version": "8.5",
-  "java.format.settings.url": "/home/siggi/bin/ghidra_11.4_PUBLIC/support/eclipse/GhidraEclipseFormatter.xml",
+  "java.format.settings.url": "/workspaces/GhidraSCMP/eclipse/GhidraEclipseFormatter.xml",
   "java.project.sourcePaths": [
     "src/main/java",
     "ghidra_scripts"
