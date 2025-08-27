@@ -59,13 +59,13 @@ macro dispEa(dst, reg, disp) {
 # Because inst_next doesn't wrap around properly,
 # use a special macro to deal with that.
 macro dispPc(dst, disp) {
-  dst = (inst_next - 1) & 0xF000;
+  dst = inst_start & 0xF000;
   dst = dst | ((inst_next + disp) & 0x0FFF);
 }
 
 # PC-relative.
 EA: loc is op_m = 0 & op_ptr = 0 ; imm8 != 0x80 & disp8
-    [ loc = ((inst_next - 1) & 0xF000) | ((inst_next + disp8) & 0xFFF); ] {
+    [ loc = (inst_start & 0xF000) | ((inst_next + disp8) & 0xFFF); ] {
   local ret:2;
   dispPc(ret, disp8);
   export ret;
@@ -103,7 +103,7 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
 }
 
 PTR: loc is op_ptr = 0; disp8
-    [ loc = (inst_next - 1 & 0xF000) | ((inst_next + disp8) & 0x0FFF); ] {
+    [ loc = (inst_start & 0xF000) | ((inst_next + disp8) & 0x0FFF); ] {
   local ret:2;
   dispPc(ret, disp8);
   export ret;
