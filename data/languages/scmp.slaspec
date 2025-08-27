@@ -79,7 +79,10 @@ EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
 }
 
 # Auto-indexed.
-EA: @disp8(op_ptr) is op_m = 1 & op_ptr; imm8 != 0x80 & disp8 {
+# The op_ptr constraint excludes op code 0xCC, which would be the
+# nonsensical STI.
+EA: @disp8(op_ptr) is op_m = 1 & op_ptr &
+    (op_ptr = 1 | op_ptr = 2 | op_ptr = 3) ; imm8 != 0x80 & disp8 {
   # TODO(siggi): Deal with pre-decrement and post-increment.
   local ret:2;
   dispEa(ret, op_ptr, disp8);

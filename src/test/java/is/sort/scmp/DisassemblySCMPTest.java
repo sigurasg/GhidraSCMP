@@ -531,10 +531,10 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertInvalidOpcode(0xBD);
 		assertInvalidOpcode(0xBE);
 		assertInvalidOpcode(0xBF);
-
-		// TODO(siggi): This is the non-existent STI, which comes out of the
-		//    ST encoding.
-		// assertInvalidOpcode(0xCC);
+		// This oddball op code corresponds to the non-existent and
+		// nonsensical STI or otherwise the likewise nonsensical
+		// ST @disp8(PC).
+		assertInvalidOpcode(0xCC);
 	}
 
 	protected void assertDisassemblesAt(String expected, int addr, int... code) {
@@ -560,7 +560,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	protected void assertInvalidOpcode(int opCode) {
 		byte[] bytes = { (byte) opCode, 0x01, 0x02, 0x03 };
 		CodeUnit codeUnit = disassembleAt(0, bytes);
-		String code = codeUnit.toString();
-		assertFalse(codeUnit instanceof Instruction);
+		assertFalse(codeUnit instanceof Instruction,
+			"Unexpected instruction: " + codeUnit.toString());
 	}
 }
