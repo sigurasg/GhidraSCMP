@@ -34,377 +34,383 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		super("SCMP:BE:16:default");
 	}
 
-
 	@Test
 	public void EA() {
 		// PC-relative.
 		// Zero, positive and negative offsets.
-		test(0xC0, "LD 0x2",0x00);
-		test(0xC0, "LD 0x81",0x7F);
+		assertDisassemblesTo("LD 0x2", 0xC0, 0x00);
+		assertDisassemblesTo("LD 0x81", 0xC0, 0x7F);
 		// Negative offset should wrap around modulo 0x1000.
-		test(0xC0, "LD 0xf83",0x81);
+		assertDisassemblesTo("LD 0xf83", 0xC0, 0x81);
+
+		// Test wraparound.
+		assertDisassemblesAt("LD 0x7000", 0x7FFE, 0xC0, 0x00);
+		assertDisassemblesAt("LD 0x707f", 0x7FFE, 0xC0, 0x7F);
+		assertDisassemblesAt("LD 0x8f83", 0X8000, 0xC0, 0x81);
 
 		// Pointer-Relative.
-		test(0xC1, "LD 0x0(P1)",0x00);
-		test(0xC1, "LD 0x7f(P1)",0x7f);
-		test(0xC1, "LD -0x7f(P1)",0x81);
-		test(0xC1, "LD E(P1)",0x80);
+		assertDisassemblesTo("LD 0x0(P1)", 0xC1, 0x00);
+		assertDisassemblesTo("LD 0x7f(P1)", 0xC1, 0x7f);
+		assertDisassemblesTo("LD -0x7f(P1)", 0xC1, 0x81);
+		assertDisassemblesTo("LD E(P1)", 0xC1, 0x80);
 
 		// Auto-Indexed.
-		test(0xC5, "LD @0x0(P1)",0x00);
-		test(0xC5, "LD @0x7f(P1)",0x7f);
-		test(0xC5, "LD @-0x7f(P1)",0x81);
-		test(0xC5, "LD @E(P1)",0x80);
-
-		// TODO(siggi): Test PC-relative wraparounds.
+		assertDisassemblesTo("LD @0x0(P1)", 0xC5, 0x00);
+		assertDisassemblesTo("LD @0x7f(P1)", 0xC5, 0x7f);
+		assertDisassemblesTo("LD @-0x7f(P1)", 0xC5, 0x81);
+		assertDisassemblesTo("LD @E(P1)", 0xC5, 0x80);
 	}
 
 	@Test
 	public void LD() {
-		test(0xC0, "LD 0x10",0x0E);
-		test(0xC1, "LD 0xe(P1)",0x0E);
-		test(0xC2, "LD 0xe(P2)",0x0E);
-		test(0xC3, "LD 0xe(P3)",0x0E);
-		test(0xC3, "LD E(P3)",0x80);
+		assertDisassemblesTo("LD 0x10", 0xC0, 0x0E);
+		assertDisassemblesTo("LD 0xe(P1)", 0xC1, 0x0E);
+		assertDisassemblesTo("LD 0xe(P2)", 0xC2, 0x0E);
+		assertDisassemblesTo("LD 0xe(P3)", 0xC3, 0x0E);
+		assertDisassemblesTo("LD E(P3)", 0xC3, 0x80);
 
-		test(0xC5, "LD @0xe(P1)",0x0E);
-		test(0xC6, "LD @0xe(P2)",0x0E);
-		test(0xC7, "LD @0xe(P3)",0x0E);
-		test(0xC5, "LD @E(P1)",0x80);
+		assertDisassemblesTo("LD @0xe(P1)", 0xC5, 0x0E);
+		assertDisassemblesTo("LD @0xe(P2)", 0xC6, 0x0E);
+		assertDisassemblesTo("LD @0xe(P3)", 0xC7, 0x0E);
+		assertDisassemblesTo("LD @E(P1)", 0xC5, 0x80);
 	}
 
 	@Test
 	public void ST() {
-		test(0xC8, "ST 0x10",0x0E);
-		test(0xC9, "ST 0xe(P1)",0x0E);
-		test(0xCA, "ST 0xe(P2)",0x0E);
-		test(0xCB, "ST 0xe(P3)",0x0E);
-		test(0xCB, "ST E(P3)",0x80);
+		assertDisassemblesTo("ST 0x10", 0xC8, 0x0E);
+		assertDisassemblesTo("ST 0xe(P1)", 0xC9, 0x0E);
+		assertDisassemblesTo("ST 0xe(P2)", 0xCA, 0x0E);
+		assertDisassemblesTo("ST 0xe(P3)", 0xCB, 0x0E);
+		assertDisassemblesTo("ST E(P3)", 0xCB, 0x80);
 
-		test(0xCD, "ST @0xe(P1)",0x0E);
-		test(0xCE, "ST @0xe(P2)",0x0E);
-		test(0xCF, "ST @0xe(P3)",0x0E);
-		test(0xCF, "ST @E(P3)",0x80);
+		assertDisassemblesTo("ST @0xe(P1)", 0xCD, 0x0E);
+		assertDisassemblesTo("ST @0xe(P2)", 0xCE, 0x0E);
+		assertDisassemblesTo("ST @0xe(P3)", 0xCF, 0x0E);
+		assertDisassemblesTo("ST @E(P3)", 0xCF, 0x80);
 	}
 
 	@Test
 	public void AND() {
-		test(0xD0, "AND 0x10",0x0E);
-		test(0xD1, "AND 0xe(P1)",0x0E);
-		test(0xD2, "AND 0xe(P2)",0x0E);
-		test(0xD3, "AND 0xe(P3)",0x0E);
-		test(0xD3, "AND E(P3)",0x80);
+		assertDisassemblesTo("AND 0x10", 0xD0, 0x0E);
+		assertDisassemblesTo("AND 0xe(P1)", 0xD1, 0x0E);
+		assertDisassemblesTo("AND 0xe(P2)", 0xD2, 0x0E);
+		assertDisassemblesTo("AND 0xe(P3)", 0xD3, 0x0E);
+		assertDisassemblesTo("AND E(P3)", 0xD3, 0x80);
 
-		test(0xD5, "AND @0xe(P1)",0x0E);
-		test(0xD6, "AND @0xe(P2)",0x0E);
-		test(0xD7, "AND @0xe(P3)",0x0E);
-		test(0xD7, "AND @E(P3)",0x80);
+		assertDisassemblesTo("AND @0xe(P1)", 0xD5, 0x0E);
+		assertDisassemblesTo("AND @0xe(P2)", 0xD6, 0x0E);
+		assertDisassemblesTo("AND @0xe(P3)", 0xD7, 0x0E);
+		assertDisassemblesTo("AND @E(P3)", 0xD7, 0x80);
 	}
 
 	@Test
 	public void OR() {
-		test(0xD8, "OR 0x10",0x0E);
-		test(0xD9, "OR 0xe(P1)",0x0E);
-		test(0xDA, "OR 0xe(P2)",0x0E);
-		test(0xDB, "OR 0xe(P3)",0x0E);
-		test(0xDB, "OR E(P3)",0x80);
+		assertDisassemblesTo("OR 0x10", 0xD8, 0x0E);
+		assertDisassemblesTo("OR 0xe(P1)", 0xD9, 0x0E);
+		assertDisassemblesTo("OR 0xe(P2)", 0xDA, 0x0E);
+		assertDisassemblesTo("OR 0xe(P3)", 0xDB, 0x0E);
+		assertDisassemblesTo("OR E(P3)", 0xDB, 0x80);
 
-		test(0xDD, "OR @0xe(P1)",0x0E);
-		test(0xDE, "OR @0xe(P2)",0x0E);
-		test(0xDF, "OR @0xe(P3)",0x0E);
-		test(0xDF, "OR @E(P3)",0x80);
+		assertDisassemblesTo("OR @0xe(P1)", 0xDD, 0x0E);
+		assertDisassemblesTo("OR @0xe(P2)", 0xDE, 0x0E);
+		assertDisassemblesTo("OR @0xe(P3)", 0xDF, 0x0E);
+		assertDisassemblesTo("OR @E(P3)", 0xDF, 0x80);
 	}
 
 	@Test
 	public void XOR() {
-		test(0xE0, "XOR 0x10",0x0E);
-		test(0xE1, "XOR 0xe(P1)",0x0E);
-		test(0xE2, "XOR 0xe(P2)",0x0E);
-		test(0xE3, "XOR 0xe(P3)",0x0E);
-		test(0xE3, "XOR E(P3)",0x80);
+		assertDisassemblesTo("XOR 0x10", 0xE0, 0x0E);
+		assertDisassemblesTo("XOR 0xe(P1)", 0xE1, 0x0E);
+		assertDisassemblesTo("XOR 0xe(P2)", 0xE2, 0x0E);
+		assertDisassemblesTo("XOR 0xe(P3)", 0xE3, 0x0E);
+		assertDisassemblesTo("XOR E(P3)", 0xE3, 0x80);
 
-		test(0xE5, "XOR @0xe(P1)",0x0E);
-		test(0xE6, "XOR @0xe(P2)",0x0E);
-		test(0xE7, "XOR @0xe(P3)",0x0E);
-		test(0xE7, "XOR @E(P3)",0x80);
+		assertDisassemblesTo("XOR @0xe(P1)", 0xE5, 0x0E);
+		assertDisassemblesTo("XOR @0xe(P2)", 0xE6, 0x0E);
+		assertDisassemblesTo("XOR @0xe(P3)", 0xE7, 0x0E);
+		assertDisassemblesTo("XOR @E(P3)", 0xE7, 0x80);
 	}
 
 	@Test
 	public void DAD() {
-		test(0xE8, "DAD 0x10",0x0E);
-		test(0xE9, "DAD 0xe(P1)",0x0E);
-		test(0xEA, "DAD 0xe(P2)",0x0E);
-		test(0xEB, "DAD 0xe(P3)",0x0E);
-		test(0xEB, "DAD E(P3)",0x80);
+		assertDisassemblesTo("DAD 0x10", 0xE8, 0x0E);
+		assertDisassemblesTo("DAD 0xe(P1)", 0xE9, 0x0E);
+		assertDisassemblesTo("DAD 0xe(P2)", 0xEA, 0x0E);
+		assertDisassemblesTo("DAD 0xe(P3)", 0xEB, 0x0E);
+		assertDisassemblesTo("DAD E(P3)", 0xEB, 0x80);
 
-		test(0xED, "DAD @0xe(P1)",0x0E);
-		test(0xEE, "DAD @0xe(P2)",0x0E);
-		test(0xEF, "DAD @0xe(P3)",0x0E);
-		test(0xEF, "DAD @E(P3)",0x80);
+		assertDisassemblesTo("DAD @0xe(P1)", 0xED, 0x0E);
+		assertDisassemblesTo("DAD @0xe(P2)", 0xEE, 0x0E);
+		assertDisassemblesTo("DAD @0xe(P3)", 0xEF, 0x0E);
+		assertDisassemblesTo("DAD @E(P3)", 0xEF, 0x80);
 	}
 
 	@Test
 	public void ADD() {
-		test(0xF0, "ADD 0x10",0x0E);
-		test(0xF1, "ADD 0xe(P1)",0x0E);
-		test(0xF2, "ADD 0xe(P2)",0x0E);
-		test(0xF3, "ADD 0xe(P3)",0x0E);
-		test(0xF3, "ADD E(P3)",0x80);
+		assertDisassemblesTo("ADD 0x10", 0xF0, 0x0E);
+		assertDisassemblesTo("ADD 0xe(P1)", 0xF1, 0x0E);
+		assertDisassemblesTo("ADD 0xe(P2)", 0xF2, 0x0E);
+		assertDisassemblesTo("ADD 0xe(P3)", 0xF3, 0x0E);
+		assertDisassemblesTo("ADD E(P3)", 0xF3, 0x80);
 
-		test(0xF5, "ADD @0xe(P1)",0x0E);
-		test(0xF6, "ADD @0xe(P2)",0x0E);
-		test(0xF7, "ADD @0xe(P3)",0x0E);
-		test(0xF7, "ADD @E(P3)",0x80);
+		assertDisassemblesTo("ADD @0xe(P1)", 0xF5, 0x0E);
+		assertDisassemblesTo("ADD @0xe(P2)", 0xF6, 0x0E);
+		assertDisassemblesTo("ADD @0xe(P3)", 0xF7, 0x0E);
+		assertDisassemblesTo("ADD @E(P3)", 0xF7, 0x80);
 	}
 
 	@Test
 	public void CAD() {
-		test(0xF8, "CAD 0x10",0x0E);
-		test(0xF9, "CAD 0xe(P1)",0x0E);
-		test(0xFA, "CAD 0xe(P2)",0x0E);
-		test(0xFB, "CAD 0xe(P3)",0x0E);
-		test(0xFB, "CAD E(P3)",0x80);
+		assertDisassemblesTo("CAD 0x10", 0xF8, 0x0E);
+		assertDisassemblesTo("CAD 0xe(P1)", 0xF9, 0x0E);
+		assertDisassemblesTo("CAD 0xe(P2)", 0xFA, 0x0E);
+		assertDisassemblesTo("CAD 0xe(P3)", 0xFB, 0x0E);
+		assertDisassemblesTo("CAD E(P3)", 0xFB, 0x80);
 		
-		test(0xFD, "CAD @0xe(P1)",0x0E);
-		test(0xFE, "CAD @0xe(P2)",0x0E);
-		test(0xFF, "CAD @0xe(P3)",0x0E);
-		test(0xFF, "CAD @E(P3)",0x80);
+		assertDisassemblesTo("CAD @0xe(P1)", 0xFD, 0x0E);
+		assertDisassemblesTo("CAD @0xe(P2)", 0xFE, 0x0E);
+		assertDisassemblesTo("CAD @0xe(P3)", 0xFF, 0x0E);
+		assertDisassemblesTo("CAD @E(P3)", 0xFF, 0x80);
 	}	
 	
 	@Test
 	public void ILD() {
-		test(0xA8, "ILD 0x10", 0x0E);
-		test(0xA9, "ILD 0xe(P1)", 0x0E);
-		test(0xAA, "ILD 0xe(P2)", 0x0E);
-		test(0xAB, "ILD 0xe(P3)", 0x0E);
+		assertDisassemblesTo("ILD 0x10", 0xA8, 0x0E);
+		assertDisassemblesTo("ILD 0xe(P1)", 0xA9, 0x0E);
+		assertDisassemblesTo("ILD 0xe(P2)", 0xAA, 0x0E);
+		assertDisassemblesTo("ILD 0xe(P3)", 0xAB, 0x0E);
 	}
 	
 	@Test
 	public void DLD() {
-		test(0xB8, "DLD 0x10", 0x0E);
-		test(0xB9, "DLD 0xe(P1)", 0x0E);
-		test(0xBA, "DLD 0xe(P2)", 0x0E);
-		test(0xBB, "DLD 0xe(P3)", 0x0E);
+		assertDisassemblesTo("DLD 0x10", 0xB8, 0x0E);
+		assertDisassemblesTo("DLD 0xe(P1)", 0xB9, 0x0E);
+		assertDisassemblesTo("DLD 0xe(P2)", 0xBA, 0x0E);
+		assertDisassemblesTo("DLD 0xe(P3)", 0xBB, 0x0E);
 	}
 	
 	@Test
 	public void LDI() {
-		test(0xC4, "LDI 0xff", 0xFF);
+		assertDisassemblesTo("LDI 0xff", 0xC4, 0xFF);
 	}
 
 	@Test
 	public void ANI() {
-		test(0xD4, "ANI 0xff", 0xFF);
+		assertDisassemblesTo("ANI 0xff", 0xD4, 0xFF);
 	}
 
 	@Test
 	public void ORI() {
-		test(0xDC, "ORI 0xff", 0xFF);
+		assertDisassemblesTo("ORI 0xff", 0xDC, 0xFF);
 	}
 
 	@Test
 	public void XRI() {
-		test(0xE4, "XRI 0xff", 0xFF);
+		assertDisassemblesTo("XRI 0xff", 0xE4, 0xFF);
 	}
 
 	@Test
 	public void DAI() {
-		test(0xEC, "DAI 0xff", 0xFF);
+		assertDisassemblesTo("DAI 0xff", 0xEC, 0xFF);
 	}
 
 	@Test
 	public void ADI() {
-		test(0xF4, "ADI 0xff", 0xFF);
+		assertDisassemblesTo("ADI 0xff", 0xF4, 0xFF);
 	}
 
 	@Test
 	public void CAI() {
-		test(0xFC, "CAI 0xff", 0xFF);
+		assertDisassemblesTo("CAI 0xff", 0xFC, 0xFF);
 	}
 
 	@Test
 	public void JMP() {
-		test(0x90, "JMP 0x10", 0x0E);
-		test(0x91, "JMP 0xe(P1)", 0x0E);
-		test(0x92, "JMP 0xe(P2)", 0x0E);
-		test(0x93, "JMP 0xe(P3)", 0x0E);
+		assertDisassemblesTo("JMP 0x10", 0x90, 0x0E);
+		assertDisassemblesTo("JMP 0xe(P1)", 0x91, 0x0E);
+		assertDisassemblesTo("JMP 0xe(P2)", 0x92, 0x0E);
+		assertDisassemblesTo("JMP 0xe(P3)", 0x93, 0x0E);
 
-		// TODO(siggi): Test PC-relative wraparounds.
+		// Test wraparound.
+		assertDisassemblesAt("JMP 0x700e", 0x7FFE, 0x90, 0x0E);
+		assertDisassemblesAt("JMP 0x7f83", 0x7000, 0x90, 0x81);
 	}
 
 	@Test
 	public void JP() {
-		test(0x94, "JP 0x10", 0x0E);
-		test(0x95, "JP 0xe(P1)", 0x0E);
-		test(0x96, "JP 0xe(P2)", 0x0E);
-		test(0x97, "JP 0xe(P3)", 0x0E);
+		assertDisassemblesTo("JP 0x10", 0x94, 0x0E);
+		assertDisassemblesTo("JP 0xe(P1)", 0x95, 0x0E);
+		assertDisassemblesTo("JP 0xe(P2)", 0x96, 0x0E);
+		assertDisassemblesTo("JP 0xe(P3)", 0x97, 0x0E);
 	}
 
 	@Test
 	public void JZ() {
-		test(0x98, "JZ 0x10", 0x0E);
-		test(0x99, "JZ 0xe(P1)", 0x0E);
-		test(0x9A, "JZ 0xe(P2)", 0x0E);
-		test(0x9B, "JZ 0xe(P3)", 0x0E);
+		assertDisassemblesTo("JZ 0x10", 0x98, 0x0E);
+		assertDisassemblesTo("JZ 0xe(P1)", 0x99, 0x0E);
+		assertDisassemblesTo("JZ 0xe(P2)", 0x9A, 0x0E);
+		assertDisassemblesTo("JZ 0xe(P3)", 0x9B, 0x0E);
 	}
 
 	@Test
 	public void JNZ() {
-		test(0x9C, "JNZ 0x10", 0x0E);
-		test(0x9D, "JNZ 0xe(P1)", 0x0E);
-		test(0x9E, "JNZ 0xe(P2)", 0x0E);
-		test(0x9F, "JNZ 0xe(P3)", 0x0E);
+		assertDisassemblesTo("JNZ 0x10", 0x9C, 0x0E);
+		assertDisassemblesTo("JNZ 0xe(P1)", 0x9D, 0x0E);
+		assertDisassemblesTo("JNZ 0xe(P2)", 0x9E, 0x0E);
+		assertDisassemblesTo("JNZ 0xe(P3)", 0x9F, 0x0E);
 	}
 
 	@Test
 	public void DLY() {
-		test(0x8F, "DLY");
+		assertDisassemblesTo("DLY", 0x8F);
 	}
 	
 	@Test
 	public void LDE() {
-		test(0x40, "LDE");
+		assertDisassemblesTo("LDE", 0x40);
 	}
 
 	@Test
 	public void XAE() {
-		test(0x01, "XAE");
+		assertDisassemblesTo("XAE", 0x01);
 	}
 
 	@Test
 	public void ANE() {
-		test(0x50, "ANE");
+		assertDisassemblesTo("ANE", 0x50);
 	}
 
 	@Test
 	public void ORE() {
-		test(0x58, "ORE");
+		assertDisassemblesTo("ORE", 0x58);
 	}
 
 	@Test
 	public void XRE() {
-		test(0x60, "XRE");
+		assertDisassemblesTo("XRE", 0x60);
 	}
 
 	@Test
 	public void DAE() {
-		test(0x68, "DAE");
+		assertDisassemblesTo("DAE", 0x68);
 	}
 
 		@Test
 	public void ADE() {
-		test(0x70, "ADE");
+		assertDisassemblesTo("ADE", 0x70);
 	}
 
 	@Test
 	public void CAE() {
-		test(0x78, "CAE");
+		assertDisassemblesTo("CAE", 0x78);
 	}
 
 	@Test
 	public void XPAL() {
-		test(0x30, "XPAL PC");
-		test(0x31, "XPAL P1");
-		test(0x32, "XPAL P2");
-		test(0x33, "XPAL P3");
+		assertDisassemblesTo("XPAL PC", 0x30);
+		assertDisassemblesTo("XPAL P1", 0x31);
+		assertDisassemblesTo("XPAL P2", 0x32);
+		assertDisassemblesTo("XPAL P3", 0x33);
 	}	
 
 	@Test
 	public void XPAH() {
-		test(0x34, "XPAH PC");
-		test(0x35, "XPAH P1");
-		test(0x36, "XPAH P2");
-		test(0x37, "XPAH P3");
+		assertDisassemblesTo("XPAH PC", 0x34);
+		assertDisassemblesTo("XPAH P1", 0x35);
+		assertDisassemblesTo("XPAH P2", 0x36);
+		assertDisassemblesTo("XPAH P3", 0x37);
 	}	
 
 	@Test
 	public void XPPC() {
-		test(0x3C, "XPPC PC");
-		test(0x3D, "XPPC P1");
-		test(0x3E, "XPPC P2");
-		test(0x3F, "XPPC P3");
+		assertDisassemblesTo("XPPC PC", 0x3C);
+		assertDisassemblesTo("XPPC P1", 0x3D);
+		assertDisassemblesTo("XPPC P2", 0x3E);
+		assertDisassemblesTo("XPPC P3", 0x3F);
 	}	
 
 	@Test
 	public void SIO() {
-		test(0x19, "SIO");
+		assertDisassemblesTo("SIO", 0x19);
 	}
 
 	@Test
 	public void SR() {
-		test(0x1C, "SR");
+		assertDisassemblesTo("SR", 0x1C);
 	}
 
 	@Test
 	public void SRL() {
-		test(0x1D, "SRL");
+		assertDisassemblesTo("SRL", 0x1D);
 	}
 
 	@Test
 	public void RR() {
-		test(0x1E, "RR");
+		assertDisassemblesTo("RR", 0x1E);
 	}
 
 	@Test
 	public void RRL() {
-		test(0x1F, "RRL");
+		assertDisassemblesTo("RRL", 0x1F);
 	}
 	
 	@Test
 	public void HALT() {
-		test(0x00, "HALT");
+		assertDisassemblesTo("HALT", 0x00);
 	}
 
 	@Test
 	public void CCL() {
-		test(0x02, "CCL");
+		assertDisassemblesTo("CCL", 0x02);
 	}
 
 	@Test
 	public void SCL() {
-		test(0x03, "SCL");
+		assertDisassemblesTo("SCL", 0x03);
 	}
 
 	@Test
 	public void DINT() {
-		test(0x04, "DINT");
+		assertDisassemblesTo("DINT", 0x04);
 	}
 	
 	@Test
 	public void IEN() {
-		test(0x05, "IEN");
+		assertDisassemblesTo("IEN", 0x05);
 	}
 	
 	@Test
 	public void CSA() {
-		test(0x06, "CSA");
+		assertDisassemblesTo("CSA", 0x06);
 	}
 
 	@Test
 	public void CAS() {
-		test(0x07, "CAS");
+		assertDisassemblesTo("CAS", 0x07);
 	}
 
 	@Test
 	public void NOP() {
-		test(0x08, "NOP");
+		assertDisassemblesTo("NOP", 0x08);
 	}
 
-	protected void test(int opCode, String expected, int... args) {
+	protected void assertDisassemblesAt(String expected, int addr, int... code) {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-		stream.write(opCode);
-		for (int arg : args) {
+		for (int arg : code) {
 			stream.write(arg);
 		}
 
 		byte[] bytes = stream.toByteArray();
-		CodeUnit codeUnit = disassemble(bytes);
+		CodeUnit codeUnit = disassembleAt(addr, bytes);
 
 		assertNotNull(codeUnit);
 		assertTrue(codeUnit instanceof Instruction);
 
 		assertEquals(expected, codeUnit.toString());
 		assertEquals(bytes.length, codeUnit.getLength());
+	}
+
+	protected void assertDisassemblesTo(String expected, int... code) {
+		assertDisassemblesAt(expected, 0, code);
 	}
 }
