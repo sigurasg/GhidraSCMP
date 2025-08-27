@@ -55,6 +55,8 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0xC5, "LD @0x7f(P1)",0x7f);
 		test(0xC5, "LD @-0x7f(P1)",0x81);
 		test(0xC5, "LD @E(P1)",0x80);
+
+		// TODO(siggi): Test PC-relative wraparounds.
 	}
 
 	@Test
@@ -226,6 +228,8 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		test(0x91, "JMP 0xe(P1)", 0x0E);
 		test(0x92, "JMP 0xe(P2)", 0x0E);
 		test(0x93, "JMP 0xe(P3)", 0x0E);
+
+		// TODO(siggi): Test PC-relative wraparounds.
 	}
 
 	@Test
