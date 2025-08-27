@@ -64,7 +64,7 @@ macro dispPc(dst, disp) {
 }
 
 # PC-relative.
-EA: loc is op_m = 0 & op_ptr = 0 ; imm8 != 0x80 & disp8
+EA: loc is op_m = 0 & op_ptr = 0; imm8 != 0x80 & disp8
     [ loc = (inst_start & 0xF000) | ((inst_next + disp8) & 0xFFF); ] {
   local ret:2;
   dispPc(ret, disp8);
@@ -82,7 +82,7 @@ EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
 # The op_ptr constraint excludes op code 0xCC, which would be the
 # nonsensical STI.
 EA: @disp8(op_ptr) is op_m = 1 & op_ptr &
-    (op_ptr = 1 | op_ptr = 2 | op_ptr = 3) ; imm8 != 0x80 & disp8 {
+    (op_ptr = 1 | op_ptr = 2 | op_ptr = 3); imm8 != 0x80 & disp8 {
   # TODO(siggi): Deal with pre-decrement and post-increment.
   local ret:2;
   dispEa(ret, op_ptr, disp8);
@@ -91,7 +91,7 @@ EA: @disp8(op_ptr) is op_m = 1 & op_ptr &
 }
 
 # Special cases for E-relative.
-EA: E(op_ptr) is op_m = 0 & op_ptr & E ; imm8 = 0x80 {
+EA: E(op_ptr) is op_m = 0 & op_ptr & E; imm8 = 0x80 {
   local ret:2;
   dispEa(ret, op_ptr, sext(E));
   export ret;
@@ -167,33 +167,33 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
   AC = *:1 ea;
 }
 
-:LDI imm8 is op0_7 = 0xC4 ; imm8 {
+:LDI imm8 is op0_7 = 0xC4; imm8 {
   AC = imm8;
 }
 
-:ANI imm8 is op0_7 = 0xD4 ; imm8 {
+:ANI imm8 is op0_7 = 0xD4; imm8 {
   AC = AC & imm8;
 }
 
-:ORI imm8 is op0_7 = 0xDC ; imm8 {
+:ORI imm8 is op0_7 = 0xDC; imm8 {
   AC = AC | imm8;
 }
 
-:XRI imm8 is op0_7 = 0xE4 ; imm8 {
+:XRI imm8 is op0_7 = 0xE4; imm8 {
   AC = AC ^ imm8;
 }
 
-:DAI imm8 is op0_7 = 0xEC ; imm8 {
+:DAI imm8 is op0_7 = 0xEC; imm8 {
   # TODO(siggi): Implement.
   AC = imm8;
 }
 
-:ADI imm8 is op0_7 = 0xF4 ; imm8 {
+:ADI imm8 is op0_7 = 0xF4; imm8 {
   # TODO(siggi): Implement carry.
   AC = AC + imm8;
 }
 
-:CAI imm8 is op0_7 = 0xFC ; imm8 {
+:CAI imm8 is op0_7 = 0xFC; imm8 {
   # TODO(siggi): Implement.
   AC = imm8;
 }
