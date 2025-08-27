@@ -17,6 +17,7 @@ package is.sort.scmp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.beans.Transient;
 import java.io.ByteArrayOutputStream;
@@ -166,13 +167,13 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("CAD 0xe(P2)", 0xFA, 0x0E);
 		assertDisassemblesTo("CAD 0xe(P3)", 0xFB, 0x0E);
 		assertDisassemblesTo("CAD E(P3)", 0xFB, 0x80);
-		
+
 		assertDisassemblesTo("CAD @0xe(P1)", 0xFD, 0x0E);
 		assertDisassemblesTo("CAD @0xe(P2)", 0xFE, 0x0E);
 		assertDisassemblesTo("CAD @0xe(P3)", 0xFF, 0x0E);
 		assertDisassemblesTo("CAD @E(P3)", 0xFF, 0x80);
-	}	
-	
+	}
+
 	@Test
 	public void ILD() {
 		assertDisassemblesTo("ILD 0x10", 0xA8, 0x0E);
@@ -180,7 +181,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("ILD 0xe(P2)", 0xAA, 0x0E);
 		assertDisassemblesTo("ILD 0xe(P3)", 0xAB, 0x0E);
 	}
-	
+
 	@Test
 	public void DLD() {
 		assertDisassemblesTo("DLD 0x10", 0xB8, 0x0E);
@@ -188,7 +189,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("DLD 0xe(P2)", 0xBA, 0x0E);
 		assertDisassemblesTo("DLD 0xe(P3)", 0xBB, 0x0E);
 	}
-	
+
 	@Test
 	public void LDI() {
 		assertDisassemblesTo("LDI 0xff", 0xC4, 0xFF);
@@ -264,7 +265,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	public void DLY() {
 		assertDisassemblesTo("DLY", 0x8F);
 	}
-	
+
 	@Test
 	public void LDE() {
 		assertDisassemblesTo("LDE", 0x40);
@@ -295,7 +296,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("DAE", 0x68);
 	}
 
-		@Test
+	@Test
 	public void ADE() {
 		assertDisassemblesTo("ADE", 0x70);
 	}
@@ -311,7 +312,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("XPAL P1", 0x31);
 		assertDisassemblesTo("XPAL P2", 0x32);
 		assertDisassemblesTo("XPAL P3", 0x33);
-	}	
+	}
 
 	@Test
 	public void XPAH() {
@@ -319,7 +320,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("XPAH P1", 0x35);
 		assertDisassemblesTo("XPAH P2", 0x36);
 		assertDisassemblesTo("XPAH P3", 0x37);
-	}	
+	}
 
 	@Test
 	public void XPPC() {
@@ -327,7 +328,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("XPPC P1", 0x3D);
 		assertDisassemblesTo("XPPC P2", 0x3E);
 		assertDisassemblesTo("XPPC P3", 0x3F);
-	}	
+	}
 
 	@Test
 	public void SIO() {
@@ -353,7 +354,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	public void RRL() {
 		assertDisassemblesTo("RRL", 0x1F);
 	}
-	
+
 	@Test
 	public void HALT() {
 		assertDisassemblesTo("HALT", 0x00);
@@ -373,12 +374,12 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	public void DINT() {
 		assertDisassemblesTo("DINT", 0x04);
 	}
-	
+
 	@Test
 	public void IEN() {
 		assertDisassemblesTo("IEN", 0x05);
 	}
-	
+
 	@Test
 	public void CSA() {
 		assertDisassemblesTo("CSA", 0x06);
@@ -392,6 +393,148 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	@Test
 	public void NOP() {
 		assertDisassemblesTo("NOP", 0x08);
+	}
+
+	@Test
+	public void InvalidOpCodes() {
+		assertInvalidOpcode(0x09);
+		assertInvalidOpcode(0x0A);
+		assertInvalidOpcode(0x0B);
+		assertInvalidOpcode(0x0C);
+		assertInvalidOpcode(0x0D);
+		assertInvalidOpcode(0x0E);
+		assertInvalidOpcode(0x0F);
+		assertInvalidOpcode(0x10);
+		assertInvalidOpcode(0x11);
+		assertInvalidOpcode(0x12);
+		assertInvalidOpcode(0x13);
+		assertInvalidOpcode(0x14);
+		assertInvalidOpcode(0x15);
+		assertInvalidOpcode(0x16);
+		assertInvalidOpcode(0x17);
+		assertInvalidOpcode(0x18);
+		assertInvalidOpcode(0x1A);
+		assertInvalidOpcode(0x1B);
+		assertInvalidOpcode(0x20);
+		assertInvalidOpcode(0x21);
+		assertInvalidOpcode(0x22);
+		assertInvalidOpcode(0x23);
+		assertInvalidOpcode(0x24);
+		assertInvalidOpcode(0x25);
+		assertInvalidOpcode(0x26);
+		assertInvalidOpcode(0x27);
+		assertInvalidOpcode(0x28);
+		assertInvalidOpcode(0x29);
+		assertInvalidOpcode(0x2A);
+		assertInvalidOpcode(0x2B);
+		assertInvalidOpcode(0x2C);
+		assertInvalidOpcode(0x2D);
+		assertInvalidOpcode(0x2E);
+		assertInvalidOpcode(0x2F);
+		assertInvalidOpcode(0x38);
+		assertInvalidOpcode(0x39);
+		assertInvalidOpcode(0x3A);
+		assertInvalidOpcode(0x3B);
+		assertInvalidOpcode(0x41);
+		assertInvalidOpcode(0x42);
+		assertInvalidOpcode(0x43);
+		assertInvalidOpcode(0x44);
+		assertInvalidOpcode(0x45);
+		assertInvalidOpcode(0x46);
+		assertInvalidOpcode(0x47);
+		assertInvalidOpcode(0x48);
+		assertInvalidOpcode(0x49);
+		assertInvalidOpcode(0x4A);
+		assertInvalidOpcode(0x4B);
+		assertInvalidOpcode(0x4C);
+		assertInvalidOpcode(0x4D);
+		assertInvalidOpcode(0x4E);
+		assertInvalidOpcode(0x4F);
+		assertInvalidOpcode(0x51);
+		assertInvalidOpcode(0x52);
+		assertInvalidOpcode(0x53);
+		assertInvalidOpcode(0x54);
+		assertInvalidOpcode(0x55);
+		assertInvalidOpcode(0x56);
+		assertInvalidOpcode(0x57);
+		assertInvalidOpcode(0x59);
+		assertInvalidOpcode(0x5A);
+		assertInvalidOpcode(0x5B);
+		assertInvalidOpcode(0x5C);
+		assertInvalidOpcode(0x5D);
+		assertInvalidOpcode(0x5E);
+		assertInvalidOpcode(0x5F);
+		assertInvalidOpcode(0x61);
+		assertInvalidOpcode(0x62);
+		assertInvalidOpcode(0x63);
+		assertInvalidOpcode(0x64);
+		assertInvalidOpcode(0x65);
+		assertInvalidOpcode(0x66);
+		assertInvalidOpcode(0x67);
+		assertInvalidOpcode(0x69);
+		assertInvalidOpcode(0x6A);
+		assertInvalidOpcode(0x6B);
+		assertInvalidOpcode(0x6C);
+		assertInvalidOpcode(0x6D);
+		assertInvalidOpcode(0x6E);
+		assertInvalidOpcode(0x6F);
+		assertInvalidOpcode(0x71);
+		assertInvalidOpcode(0x72);
+		assertInvalidOpcode(0x73);
+		assertInvalidOpcode(0x74);
+		assertInvalidOpcode(0x75);
+		assertInvalidOpcode(0x76);
+		assertInvalidOpcode(0x77);
+		assertInvalidOpcode(0x79);
+		assertInvalidOpcode(0x7A);
+		assertInvalidOpcode(0x7B);
+		assertInvalidOpcode(0x7C);
+		assertInvalidOpcode(0x7D);
+		assertInvalidOpcode(0x7E);
+		assertInvalidOpcode(0x7F);
+		assertInvalidOpcode(0x80);
+		assertInvalidOpcode(0x81);
+		assertInvalidOpcode(0x82);
+		assertInvalidOpcode(0x83);
+		assertInvalidOpcode(0x84);
+		assertInvalidOpcode(0x85);
+		assertInvalidOpcode(0x86);
+		assertInvalidOpcode(0x87);
+		assertInvalidOpcode(0x88);
+		assertInvalidOpcode(0x89);
+		assertInvalidOpcode(0x8A);
+		assertInvalidOpcode(0x8B);
+		assertInvalidOpcode(0x8C);
+		assertInvalidOpcode(0x8D);
+		assertInvalidOpcode(0x8E);
+		assertInvalidOpcode(0xA0);
+		assertInvalidOpcode(0xA1);
+		assertInvalidOpcode(0xA2);
+		assertInvalidOpcode(0xA3);
+		assertInvalidOpcode(0xA4);
+		assertInvalidOpcode(0xA5);
+		assertInvalidOpcode(0xA6);
+		assertInvalidOpcode(0xA7);
+		assertInvalidOpcode(0xAC);
+		assertInvalidOpcode(0xAD);
+		assertInvalidOpcode(0xAE);
+		assertInvalidOpcode(0xAF);
+		assertInvalidOpcode(0xB0);
+		assertInvalidOpcode(0xB1);
+		assertInvalidOpcode(0xB2);
+		assertInvalidOpcode(0xB3);
+		assertInvalidOpcode(0xB4);
+		assertInvalidOpcode(0xB5);
+		assertInvalidOpcode(0xB6);
+		assertInvalidOpcode(0xB7);
+		assertInvalidOpcode(0xBC);
+		assertInvalidOpcode(0xBD);
+		assertInvalidOpcode(0xBE);
+		assertInvalidOpcode(0xBF);
+
+		// TODO(siggi): This is the non-existent STI, which comes out of the
+		//    ST encoding.
+		// assertInvalidOpcode(0xCC);
 	}
 
 	protected void assertDisassemblesAt(String expected, int addr, int... code) {
@@ -412,5 +555,12 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	protected void assertDisassemblesTo(String expected, int... code) {
 		assertDisassemblesAt(expected, 0, code);
+	}
+
+	protected void assertInvalidOpcode(int opCode) {
+		byte[] bytes = { (byte) opCode, 0x01, 0x02, 0x03 };
+		CodeUnit codeUnit = disassembleAt(0, bytes);
+		String code = codeUnit.toString();
+		assertFalse(codeUnit instanceof Instruction);
 	}
 }
