@@ -43,12 +43,12 @@ public abstract class AbstractIntegrationTest extends AbstractGenericTest {
 		return language.getDefaultSpace().getAddress(addr);
 	}
 
-	protected CodeUnit disassemble(byte[] bytes) {
+	protected CodeUnit disassembleAt(int addr, byte[] bytes) {
 		try (Transaction transaction = program.openTransaction("disassemble")) {
 			ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
 			// Create an overlay block.
 			MemoryBlock block = program.getMemory()
-					.createInitializedBlock("test", address(0), stream, bytes.length,
+					.createInitializedBlock("test", address(addr), stream, bytes.length,
 						TaskMonitor.DUMMY,
 						true);
 

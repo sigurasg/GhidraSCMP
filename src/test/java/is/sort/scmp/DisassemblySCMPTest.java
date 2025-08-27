@@ -34,7 +34,6 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		super("SCMP:BE:16:default");
 	}
 
-
 	@Test
 	public void EA() {
 		// PC-relative.
@@ -173,87 +172,87 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	
 	@Test
 	public void ILD() {
-		assertDisassemblesTo("ILD 0x10", 0xA8,  0x0E);
-		assertDisassemblesTo("ILD 0xe(P1)", 0xA9,  0x0E);
-		assertDisassemblesTo("ILD 0xe(P2)", 0xAA,  0x0E);
-		assertDisassemblesTo("ILD 0xe(P3)", 0xAB,  0x0E);
+		assertDisassemblesTo("ILD 0x10", 0xA8, 0x0E);
+		assertDisassemblesTo("ILD 0xe(P1)", 0xA9, 0x0E);
+		assertDisassemblesTo("ILD 0xe(P2)", 0xAA, 0x0E);
+		assertDisassemblesTo("ILD 0xe(P3)", 0xAB, 0x0E);
 	}
 	
 	@Test
 	public void DLD() {
-		assertDisassemblesTo("DLD 0x10", 0xB8,  0x0E);
-		assertDisassemblesTo("DLD 0xe(P1)", 0xB9,  0x0E);
-		assertDisassemblesTo("DLD 0xe(P2)", 0xBA,  0x0E);
-		assertDisassemblesTo("DLD 0xe(P3)", 0xBB,  0x0E);
+		assertDisassemblesTo("DLD 0x10", 0xB8, 0x0E);
+		assertDisassemblesTo("DLD 0xe(P1)", 0xB9, 0x0E);
+		assertDisassemblesTo("DLD 0xe(P2)", 0xBA, 0x0E);
+		assertDisassemblesTo("DLD 0xe(P3)", 0xBB, 0x0E);
 	}
 	
 	@Test
 	public void LDI() {
-		assertDisassemblesTo("LDI 0xff", 0xC4,  0xFF);
+		assertDisassemblesTo("LDI 0xff", 0xC4, 0xFF);
 	}
 
 	@Test
 	public void ANI() {
-		assertDisassemblesTo("ANI 0xff", 0xD4,  0xFF);
+		assertDisassemblesTo("ANI 0xff", 0xD4, 0xFF);
 	}
 
 	@Test
 	public void ORI() {
-		assertDisassemblesTo("ORI 0xff", 0xDC,  0xFF);
+		assertDisassemblesTo("ORI 0xff", 0xDC, 0xFF);
 	}
 
 	@Test
 	public void XRI() {
-		assertDisassemblesTo("XRI 0xff", 0xE4,  0xFF);
+		assertDisassemblesTo("XRI 0xff", 0xE4, 0xFF);
 	}
 
 	@Test
 	public void DAI() {
-		assertDisassemblesTo("DAI 0xff", 0xEC,  0xFF);
+		assertDisassemblesTo("DAI 0xff", 0xEC, 0xFF);
 	}
 
 	@Test
 	public void ADI() {
-		assertDisassemblesTo("ADI 0xff", 0xF4,  0xFF);
+		assertDisassemblesTo("ADI 0xff", 0xF4, 0xFF);
 	}
 
 	@Test
 	public void CAI() {
-		assertDisassemblesTo("CAI 0xff", 0xFC,  0xFF);
+		assertDisassemblesTo("CAI 0xff", 0xFC, 0xFF);
 	}
 
 	@Test
 	public void JMP() {
-		assertDisassemblesTo("JMP 0x10", 0x90,  0x0E);
-		assertDisassemblesTo("JMP 0xe(P1)", 0x91,  0x0E);
-		assertDisassemblesTo("JMP 0xe(P2)", 0x92,  0x0E);
-		assertDisassemblesTo("JMP 0xe(P3)", 0x93,  0x0E);
+		assertDisassemblesTo("JMP 0x10", 0x90, 0x0E);
+		assertDisassemblesTo("JMP 0xe(P1)", 0x91, 0x0E);
+		assertDisassemblesTo("JMP 0xe(P2)", 0x92, 0x0E);
+		assertDisassemblesTo("JMP 0xe(P3)", 0x93, 0x0E);
 
 		// TODO(siggi): Test PC-relative wraparounds.
 	}
 
 	@Test
 	public void JP() {
-		assertDisassemblesTo("JP 0x10", 0x94,  0x0E);
-		assertDisassemblesTo("JP 0xe(P1)", 0x95,  0x0E);
-		assertDisassemblesTo("JP 0xe(P2)", 0x96,  0x0E);
-		assertDisassemblesTo("JP 0xe(P3)", 0x97,  0x0E);
+		assertDisassemblesTo("JP 0x10", 0x94, 0x0E);
+		assertDisassemblesTo("JP 0xe(P1)", 0x95, 0x0E);
+		assertDisassemblesTo("JP 0xe(P2)", 0x96, 0x0E);
+		assertDisassemblesTo("JP 0xe(P3)", 0x97, 0x0E);
 	}
 
 	@Test
 	public void JZ() {
-		assertDisassemblesTo("JZ 0x10", 0x98,  0x0E);
-		assertDisassemblesTo("JZ 0xe(P1)", 0x99,  0x0E);
-		assertDisassemblesTo("JZ 0xe(P2)", 0x9A,  0x0E);
-		assertDisassemblesTo("JZ 0xe(P3)", 0x9B,  0x0E);
+		assertDisassemblesTo("JZ 0x10", 0x98, 0x0E);
+		assertDisassemblesTo("JZ 0xe(P1)", 0x99, 0x0E);
+		assertDisassemblesTo("JZ 0xe(P2)", 0x9A, 0x0E);
+		assertDisassemblesTo("JZ 0xe(P3)", 0x9B, 0x0E);
 	}
 
 	@Test
 	public void JNZ() {
-		assertDisassemblesTo("JNZ 0x10", 0x9C,  0x0E);
-		assertDisassemblesTo("JNZ 0xe(P1)", 0x9D,  0x0E);
-		assertDisassemblesTo("JNZ 0xe(P2)", 0x9E,  0x0E);
-		assertDisassemblesTo("JNZ 0xe(P3)", 0x9F,  0x0E);
+		assertDisassemblesTo("JNZ 0x10", 0x9C, 0x0E);
+		assertDisassemblesTo("JNZ 0xe(P1)", 0x9D, 0x0E);
+		assertDisassemblesTo("JNZ 0xe(P2)", 0x9E, 0x0E);
+		assertDisassemblesTo("JNZ 0xe(P3)", 0x9F, 0x0E);
 	}
 
 	@Test
@@ -390,20 +389,23 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("NOP", 0x08);
 	}
 
-
-	protected void assertDisassemblesTo(String expected, int... args) {
+	protected void assertDisassemblesAt(String expected, int addr, int... args) {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		for (int arg : args) {
 			stream.write(arg);
 		}
 
 		byte[] bytes = stream.toByteArray();
-		CodeUnit codeUnit = disassemble(bytes);
+		CodeUnit codeUnit = disassembleAt(addr, bytes);
 
 		assertNotNull(codeUnit);
 		assertTrue(codeUnit instanceof Instruction);
 
 		assertEquals(expected, codeUnit.toString());
 		assertEquals(bytes.length, codeUnit.getLength());
+	}
+
+	protected void assertDisassemblesTo(String expected, int... args) {
+		assertDisassemblesAt(expected, 0, args);
 	}
 }
