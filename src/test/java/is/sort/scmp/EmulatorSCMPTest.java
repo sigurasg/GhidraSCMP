@@ -66,7 +66,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assertEquals(getPC(), PC + 0x01);
 	}
 
-
+	@Test
 	public void JMP_P1Rel() {
 		// P1-relative JMP.
 		setP1(0x0200);
@@ -75,6 +75,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assertEquals(getPC(), 0x0212);
 	}
 
+	@Test
 	public void JP() {
 		write(0x100, 0x94, 0x10);
 
@@ -94,6 +95,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assertEquals(getPC(), 0x0102);
 	}
 
+	@Test
 	public void JZ() {
 		write(0x100, 0x98, 0x10);
 
@@ -113,8 +115,9 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assertEquals(getPC(), 0x0102);
 	}
 
+	@Test
 	public void JNZ() {
-		write(0x100, 0x98, 0x10);
+		write(0x100, 0x9C, 0x10);
 
 		// Test zero.
 		setAC(0x00);
