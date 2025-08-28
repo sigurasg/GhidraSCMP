@@ -16,6 +16,8 @@ package is.sort.scmp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.beans.Transient;
+
 import org.junit.jupiter.api.Test;
 
 public class EmulatorSCMPTest extends AbstractEmulatorTest {
@@ -35,13 +37,13 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		write(0x0000, 0x00);
 		stepFrom(0x000);
 
-		assertEquals(getAC(), 0x00);
-		assertEquals(getSR(), 0x00);
-		assertEquals(getE(), 0x00);
-		assertEquals(getP1(), 0x0010);
-		assertEquals(getP2(), 0x0020);
-		assertEquals(getP3(), 0x0030);
-		assertEquals(getPC(), 0X0001);
+		assertEquals(0x00, getAC());
+		assertEquals(0x00, getSR());
+		assertEquals(0x00, getE());
+		assertEquals(0x0010, getP1());
+		assertEquals(0x0020, getP2());
+		assertEquals(0x0030, getP3());
+		assertEquals(0X0001, getPC());
 	}
 
 	@Test
@@ -50,7 +52,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		write(PC, 0xC0, 0x10);
 		write(0x8112, 0xFF);
 		stepFrom(PC);
-		assertEquals(0xFF, getAC());
+		assertEquals(getAC(), 0xFF);
 	}
 
 	@Test
@@ -59,11 +61,11 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		// PC-relative JMP.
 		write(PC, 0x90, 0x10, 0x90, 0xFF);
 		stepFrom(PC);
-		assertEquals(getPC(), PC + 0x12);
+		assertEquals(PC + 0x12, getPC());
 
 		PC += 2;
 		stepFrom(PC);
-		assertEquals(getPC(), PC + 0x01);
+		assertEquals(PC + 0x01, getPC());
 	}
 
 	@Test
@@ -72,7 +74,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setP1(0x0200);
 		write(0x0100, 0x91, 0x12);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0212);
+		assertEquals(0x0212, getPC());
 	}
 
 	@Test
@@ -82,17 +84,17 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0112);
+		assertEquals(0x0112, getPC());
 
 		// Test positive
 		setAC(0x7F);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0112);
+		assertEquals(0x0112, getPC());
 
 		// Test negative.
 		setAC(0x81);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0102);
+		assertEquals(0x0102, getPC());
 	}
 
 	@Test
@@ -102,17 +104,17 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0112);
+		assertEquals(0x0112, getPC());
 
 		// Test positive
 		setAC(0x7F);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0102);
+		assertEquals(0x0102, getPC());
 
 		// Test negative.
 		setAC(0x81);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0102);
+		assertEquals(0x0102, getPC());
 	}
 
 	@Test
@@ -122,16 +124,52 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0102);
+		assertEquals(0x0102, getPC());
 
 		// Test positive
 		setAC(0x7F);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0112);
+		assertEquals(0x0112, getPC());
 
 		// Test negative.
 		setAC(0x81);
 		stepFrom(0x0100);
-		assertEquals(getPC(), 0x0112);
+		assertEquals(0x0112, getPC());
+	}
+
+	@Test
+	public void XPAL() {
+		write(0x100, 0x31);  // XPAL P1.
+
+		setAC(0x01);
+		setP1(0x0203);
+		stepFrom(0x100);
+
+		assertEquals(0x03, getAC());
+		assertEquals(0x0201, getP1());	
+	}
+
+	@Test
+	public void XPAH() {
+		write(0x0100, 0x35);  // XPAH P1.
+
+		setAC(0x01);
+		setP1(0x0203);
+		stepFrom(0x0100);
+
+		assertEquals(0x02, getAC());
+		assertEquals(0x0103, getP1());	
+	}
+
+	@Test
+	public void XPPC() {
+		write(0x0100, 0x3D);  // XPPC P1.
+
+		setP1(0x0203);
+		stepFrom(0x0100);
+
+		assertEquals(0x0203, getPC());
+		assertEquals(0x0101, getP1());	
+		
 	}
 }
