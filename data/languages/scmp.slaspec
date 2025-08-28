@@ -266,14 +266,14 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 :XPAL op_ptr is op2_7 = 0x0C & op_ptr {
   # TODO(siggi): Does this need special casing for PC?
   local tmp:1 = op_ptr[0,8];
-  op_ptr = (op_ptr & 0xFF00) | zext(AC);
+  op_ptr[0,8] = AC;
   AC = tmp;
 }
 
 :XPAH op_ptr is op2_7 = 0x0D & op_ptr {
   # TODO(siggi): Does this need special casing for PC?
   local tmp:1 = op_ptr[8,8];
-  op_ptr = (op_ptr & 0x00FF) | (zext(AC) << 8);
+  op_ptr[8,8] = AC;
   AC = tmp;
 }
 
