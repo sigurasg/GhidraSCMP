@@ -83,15 +83,27 @@ EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
 # nonsensical STI.
 EA: @disp8(op_ptr) is op_m = 1 & op_ptr &
     (op_ptr = 1 | op_ptr = 2 | op_ptr = 3); imm8 != 0x80 & disp8 {
-  # TODO(siggi): Deal with pre-decrement and post-increment.
-  local ret:2;
-  dispEa(ret, op_ptr, disp8);
-  op_ptr = ret;
+  # Compute the EA.
+  local tmp:2;
+  dispEa(tmp, op_ptr, disp8);
+
+  local ret:2 = op_ptr;
+  local disp:1 = disp8;
+  if (disp s>= 0)
+    goto <post_incr>;
+
+  # The pre-decrement case returns the new EA.
+  ret = tmp;
+
+<post_incr>
+  # Update the ptr register to the new value in either case.
+  op_ptr = tmp;
   export ret;
 }
 
 # Special cases for E-relative.
 EA: E(op_ptr) is op_m = 0 & op_ptr & E; imm8 = 0x80 {
+  # TODO(siggi): Does this also do pre-decrement and post-increment?
   local ret:2;
   dispEa(ret, op_ptr, sext(E));
   export ret;

@@ -122,12 +122,21 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		return emulator.readMemory(address(addr), length);
 	}
 
-	protected byte readByte(int addr) {
-		return read(addr, 1)[0];
+	protected int readByte(int addr) {
+		return read(addr, 1)[0] & 0xFF;
 	}
 
 	protected void stepFrom(int addr) {
 		setPC(addr);
+		try {
+			emulator.step(TaskMonitor.DUMMY);
+		}
+		catch (CancelledException e) {
+			fail("Failed to step.", e);
+		}
+	}
+
+	protected void step() {
 		try {
 			emulator.step(TaskMonitor.DUMMY);
 		}
