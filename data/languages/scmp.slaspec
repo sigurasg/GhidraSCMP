@@ -236,7 +236,7 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :DLY imm8 is op0_7 = 0x8F; imm8 {
-  # Just a NOP for our purposes.
+  # DLY is a NOP for disassembly.
   goto inst_next;
 }
 
@@ -320,31 +320,32 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :HALT is op0_7 = 0x00 {
-# TODO(siggi}: Implement me.
+  # HALT is a NOP for disassembly.
+  goto inst_next;
 }
 
 :CCL is op0_7 = 0x02 {
-# TODO(siggi}: Implement me.
+  $(CYL_flag) = 0;
 }
 
 :SCL is op0_7 = 0x03 {
-# TODO(siggi}: Implement me.
+  $(CYL_flag) = 1;
 }
 
 :DINT is op0_7 = 0x04 {
-# TODO(siggi}: Implement me.
+  $(IE_flag) = 0;
 }
 
 :IEN is op0_7 = 0x5 {
-# TODO(siggi}: Implement me.
+  $(IE_flag) = 1;
 }
 
 :CSA is op0_7 = 0x06 {
-# TODO(siggi}: Implement me.
+  AC = SR;
 }
 
 :CAS is op0_7 = 0x07 {
-# TODO(siggi}: Implement me.
+  SR = AC;
 }
 
 :NOP is op0_7 = 0x08 {
