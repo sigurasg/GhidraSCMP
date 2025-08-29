@@ -201,8 +201,8 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setP1(0x0203);
 		stepFrom(0x0100);
 
-		assertEquals(0x0203, getPC());
-		assertEquals(0x0101, getP1());
+		assertEquals(0x0204, getPC());
+		assertEquals(0x0100, getP1());
 
 	}
 }

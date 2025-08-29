@@ -290,8 +290,12 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :XPPC op_ptr is op2_7 = 0x0F & op_ptr {
-  local tmp:2 = op_ptr;
-  op_ptr = inst_next;
+  # This instruction doesn't behave as described in the manual.
+  # Rather than incrementing PC before the swap, it increments
+  # it after the swap. The end result is the same, except the
+  # pointer register must always be one short of the destination.
+  local tmp:2 = (op_ptr + 1) & 0x0FFF;
+  op_ptr = inst_start;
   goto [tmp];
 }
 
