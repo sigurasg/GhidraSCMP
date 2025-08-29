@@ -263,7 +263,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void DLY() {
-		assertDisassemblesTo("DLY", 0x8F);
+		assertDisassemblesTo("DLY 0x8f", 0x8F, 0x8F);
 	}
 
 	@Test

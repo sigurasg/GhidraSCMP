@@ -90,10 +90,7 @@ task copySleighSources(type: Sync) {
     dependsOn(compileSleigh)
 }
 
-
-// tasks.named('buildExtension') {
-// }
-
+// TODO(siggi): This needs to depend on the slaspec somehow.
 tasks.named('test') {
     useJUnitPlatform()
 
