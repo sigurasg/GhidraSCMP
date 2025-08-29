@@ -245,7 +245,7 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :XAE is op0_7 = 0x01 {
-  local tmp:1 = AC;
+  local tmp:1 = E;
   E = AC;
   AC = tmp;
 }

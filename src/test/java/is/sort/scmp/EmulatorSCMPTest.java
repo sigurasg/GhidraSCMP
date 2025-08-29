@@ -171,6 +171,16 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	}
 
 	@Test
+	public void XAE() {
+		write(0x100, 0x1);	// XAE
+		setAC(0x01);
+		setE(0x02);
+		stepFrom(0x100);
+		assertEquals(0x2, getAC());
+		assertEquals(0x1, getE());
+	}
+
+	@Test
 	public void XPAL() {
 		write(0x100, 0x31);  // XPAL P1.
 
@@ -201,6 +211,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setP1(0x0203);
 		stepFrom(0x0100);
 
+		// PC is incremented post-exchange.
 		assertEquals(0x0204, getPC());
 		assertEquals(0x0100, getP1());
 
