@@ -235,7 +235,7 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
   <nojmp>
 }
 
-:DLY is op0_7 = 0x8F {
+:DLY imm8 is op0_7 = 0x8F; imm8 {
   # Just a NOP for our purposes.
   goto inst_next;
 }
