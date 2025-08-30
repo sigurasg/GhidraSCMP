@@ -63,6 +63,16 @@ macro dispPc(dst, disp) {
   dst = dst | ((inst_next + disp) & 0x0FFF);
 }
 
+macro additionWithCarry(op) {
+    local carryIn = $(CYL_flag);
+    local tmpResult = AC + op;
+
+    $(CYL_flag) = carry(AC, op) || carry(tmpResult, carryIn);
+    $(OV_flag) = scarry(AC, op) ^^ scarry(tmpResult, carryIn);
+
+    AC = tmpResult + carryIn;
+}
+
 # PC-relative.
 EA: loc is op_m = 0 & op_ptr = 0; imm8 != 0x80 & disp8
     [ loc = (inst_start & 0xF000) | ((inst_next + disp8) & 0xFFF); ] {
@@ -157,13 +167,11 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :ADD EA is op3_7 = 0x1E ... & EA {
-  # TODO(siggi): fixme!
-  AC = AC + *EA;
+  additionWithCarry(*EA);
 }
 
 :CAD EA is op3_7 = 0x1F ... & EA {
-  # TODO(siggi): fixme!
-  AC = AC + *EA;
+  additionWithCarry(0xFF ^ *EA);
 }
 
 :ILD PTR is op2_7 = 0x2A ... & PTR {
@@ -200,13 +208,11 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :ADI imm8 is op0_7 = 0xF4; imm8 {
-  # TODO(siggi): Implement carry.
-  AC = AC + imm8;
+  additionWithCarry(imm8);
 }
 
 :CAI imm8 is op0_7 = 0xFC; imm8 {
-  # TODO(siggi): Implement.
-  AC = imm8;
+  additionWithCarry(0xFF ^ imm8);
 }
 
 :JMP PTR is op2_7 = 0x24 ... & PTR {
