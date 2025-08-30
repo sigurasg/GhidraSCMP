@@ -62,10 +62,71 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void LD_PCRel() {
 		final int PC = 0x8100;
-		write(PC, 0xC0, 0x10);
+		write(PC, 0xC0, 0x10);  // LD 0x8112
 		write(0x8112, 0xFF);
 		stepFrom(PC);
 		assertEquals(getAC(), 0xFF);
+	}
+
+	@Test
+	public void ADDI() {
+		write(0x0100, 0xF4, 0x10);  // ADI 0x10
+
+		// Add with no carry.
+		setSR(0x00);
+		setAC(0x00);
+		stepFrom(0x0100);
+		assertEquals(0x00, getSR());
+		assertEquals(0x10, getAC());
+
+		// Add with carry set.
+		setSR(0x80);
+		setAC(0x00);
+		stepFrom(0x0100);
+		assertEquals(0x00, getSR());
+		assertEquals(0x11, getAC());
+
+		// Overflow.
+		setSR(0x00);
+		setAC(0x70);
+		stepFrom(0x0100);
+		assertEquals(0x40, getSR());
+		assertEquals(0x80, getAC());
+
+		// Overflow through carry.
+		setSR(0x80);
+		setAC(0x6F);
+		stepFrom(0x0100);
+		assertEquals(0x40, getSR());
+		assertEquals(0x80, getAC());
+
+		// Carry out.
+		setSR(0x00);
+		setAC(0xF0);
+		stepFrom(0x0100);
+		assertEquals(0x80, getSR());
+		assertEquals(0x00, getAC());
+
+		// Carry in & out.
+		setSR(0x80);
+		setAC(0xEF);
+		stepFrom(0x0100);
+		assertEquals(0x80, getSR());
+		assertEquals(0x00, getAC());
+	}
+
+	@Test
+	public void CAI() {
+		// Cheat, knowing that the implementation is essentially
+		// just ADI with complement.
+		write(0x0100, 0xFC, ~0x10);  // CAI 0x10
+
+		// No carry.
+		setSR(0x00);
+		setAC(0x00);
+		stepFrom(0x0100);
+		assertEquals(0x00, getSR());
+		assertEquals(0x10, getAC());
 	}
 
 	@Test
