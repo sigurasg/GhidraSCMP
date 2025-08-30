@@ -130,6 +130,20 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	}
 
 	@Test
+	public void DAE() {
+		write(0x100, 0x68);
+
+		setSR(0x00);
+		setAC(0x89);
+		setE(0x11);
+		stepFrom(0x100);
+		assertEquals(0x00, getAC());
+		assertEquals(0x80, getSR());
+
+		// TODO(siggi): Moar testing.
+	}
+
+	@Test
 	public void JMP_PCRel() {
 		final int PC = 0x8100;
 		// PC-relative JMP.
