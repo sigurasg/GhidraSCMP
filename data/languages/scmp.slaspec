@@ -103,14 +103,13 @@ EA: @disp8(op_ptr) is op_m = 1 & op_ptr &
 
 # Special cases for E-relative.
 EA: E(op_ptr) is op_m = 0 & op_ptr & E; imm8 = 0x80 {
-  # TODO(siggi): Does this also do pre-decrement and post-increment?
   local ret:2;
   dispEa(ret, op_ptr, sext(E));
   export ret;
 }
 
 EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
-  # TODO(siggi): Deal with pre-decrement and post-increment.
+  # TODO(siggi): Does this also do pre-decrement and post-increment?
   local ret:2;
   dispEa(ret, op_ptr, sext(E));
   op_ptr = ret;
