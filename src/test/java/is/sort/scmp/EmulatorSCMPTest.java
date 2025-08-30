@@ -60,27 +60,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	}
 
 	@Test
-	public void NOP() {
-		setAC(0x00);
-		setSR(0x00);
-		setE(0x00);
-		setP1(0x0010);
-		setP2(0x0020);
-		setP3(0x0030);
-
-		write(0x0000, 0x00);
-		stepFrom(0x000);
-
-		assertEquals(0x00, getAC());
-		assertEquals(0x00, getSR());
-		assertEquals(0x00, getE());
-		assertEquals(0x0010, getP1());
-		assertEquals(0x0020, getP2());
-		assertEquals(0x0030, getP3());
-		assertEquals(0X0001, getPC());
-	}
-
-	@Test
 	public void LD_PCRel() {
 		final int PC = 0x8100;
 		write(PC, 0xC0, 0x10);
@@ -171,6 +150,11 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	}
 
 	@Test
+	public void DLY() {
+		assertIsNOP(0x8F, 0x10);
+	}
+
+	@Test
 	public void XAE() {
 		write(0x100, 0x1);	// XAE
 		setAC(0x01);
@@ -214,6 +198,148 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		// PC is incremented post-exchange.
 		assertEquals(0x0204, getPC());
 		assertEquals(0x0100, getP1());
+	}
 
+	@Test
+	public void SIO() {
+		write(0x0100, 0x19);  // SIO.
+
+		// TODO(siggi): Test SIN and SOUT once added.
+		setE(0xAA);
+		stepFrom((0x0100));
+		assertEquals(0x55, getE());
+	}
+
+	@Test
+	public void SR() {
+		write(0x0100, 0x1C);  // SR.
+
+		setAC(0xAA);
+		setSR(0xFF);
+		stepFrom((0x0100));
+		assertEquals(0x55, getAC());
+		assertEquals(0xFF, getSR());
+	}
+
+	@Test
+	public void SRL() {
+		write(0x0100, 0x1D);  // SRL.
+
+		setAC(0xAA);
+		setSR(0xFF);
+		stepFrom((0x0100));
+		assertEquals(0xD5, getAC());
+		assertEquals(0xFF, getSR());
+	}
+
+	@Test
+	public void RR() {
+		write(0x0100, 0x1E);  // RR.
+
+		setAC(0x41);
+		setSR(0xFF);
+		stepFrom((0x0100));
+		assertEquals(0xA0, getAC());
+		assertEquals(0xFF, getSR());
+	}
+
+	@Test
+	public void RRL() {
+		write(0x0100, 0x1F);  // RRL.
+
+		setAC(0x01);
+		setSR(0xFF);
+		stepFrom((0x0100));
+		assertEquals(0x80, getAC());
+		assertEquals(0xFF, getSR());
+
+		setAC(0x01);
+		setSR(0x00);
+		stepFrom((0x0100));
+		assertEquals(0x00, getAC());
+		assertEquals(0x80, getSR());
+	}
+
+	@Test
+	public void HALT() {
+		assertIsNOP(0x00);
+
+	}
+
+	@Test
+	public void CCL() {
+		write(0x0000, 0x02);	// CCL
+		setSR(0xFF);
+		stepFrom(0x0000);
+		assertEquals(0x7F, getSR());
+	}
+
+	@Test
+	public void SCL() {
+		write(0x0000, 0x03);	// SCL
+		setSR(0x00);
+		stepFrom(0x0000);
+		assertEquals(0x80, getSR());
+	}
+
+	@Test
+	public void DINT() {
+		write(0x0000, 0x04);	// DINT
+		setSR(0xFF);
+		stepFrom(0x0000);
+		assertEquals(0xF7, getSR());
+	}
+
+	@Test
+	public void IEN() {
+		write(0x0000, 0x05);	// IEN
+		setSR(0x00);
+		stepFrom(0x0000);
+		assertEquals(0x08, getSR());
+	}
+
+	@Test
+	public void CSA() {
+		write(0x0000, 0x06);	// CSA
+		setSR(0xAA);
+		setAC(0x00);
+		stepFrom(0x0000);
+		assertEquals(0xAA, getSR());
+		assertEquals(0xAA, getAC());
+	}
+
+	@Test
+	public void CAS() {
+		write(0x0000, 0x07);	// CAS
+		setAC(0xAA);
+		setSR(0x00);
+		stepFrom(0x0000);
+		assertEquals(0xAA, getSR());
+		assertEquals(0xAA, getAC());
+	}
+
+	@Test
+	public void NOP() {
+		assertIsNOP(0x08);
+	}
+
+	protected void assertIsNOP(int... code) {
+		setAC(0x00);
+		setSR(0x00);
+		setE(0x00);
+		setP1(0x0010);
+		setP2(0x0020);
+		setP3(0x0030);
+
+		write(0x0000, code);
+		stepFrom(0x000);
+
+		assertEquals(0x00, getAC());
+		assertEquals(0x00, getSR());
+		assertEquals(0x00, getE());
+		assertEquals(0x0010, getP1());
+		assertEquals(0x0020, getP2());
+		assertEquals(0x0030, getP3());
+		assertEquals(code.length, getPC());
 	}
 }

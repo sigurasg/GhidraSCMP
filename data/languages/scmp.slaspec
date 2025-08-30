@@ -103,14 +103,13 @@ EA: @disp8(op_ptr) is op_m = 1 & op_ptr &
 
 # Special cases for E-relative.
 EA: E(op_ptr) is op_m = 0 & op_ptr & E; imm8 = 0x80 {
-  # TODO(siggi): Does this also do pre-decrement and post-increment?
   local ret:2;
   dispEa(ret, op_ptr, sext(E));
   export ret;
 }
 
 EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
-  # TODO(siggi): Deal with pre-decrement and post-increment.
+  # TODO(siggi): Does this also do pre-decrement and post-increment?
   local ret:2;
   dispEa(ret, op_ptr, sext(E));
   op_ptr = ret;
@@ -236,7 +235,7 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :DLY imm8 is op0_7 = 0x8F; imm8 {
-  # Just a NOP for our purposes.
+  # DLY is a NOP for disassembly.
   goto inst_next;
 }
 
@@ -300,51 +299,55 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :SIO is op0_7 = 0x19 {
-  # TODO(siggi}: Implement me.
+  # TODO(siggi): Add a register to contain SIN and SOUT.
+  E = E >> 1;
 }
 
 :SR is op0_7 = 0x1C {
-  # TODO(siggi}: Implement me.
+  AC = AC >> 1;
 }
 
 :SRL is op0_7 = 0x1D {
-  # TODO(siggi}: Implement me.
+  AC = (AC >> 1) | ($(CYL_flag) << 7);
 }
 
 :RR is op0_7 = 0x1E {
-  # TODO(siggi}: Implement me.
+  AC = (AC >> 1) | (AC << 7);
 }
 
 :RRL is op0_7 = 0x1F {
-  # TODO(siggi}: Implement me.
+  local tmp:1 = AC;
+  AC = (AC >> 1) | ($(CYL_flag) << 7);
+  $(CYL_flag) = tmp & 0x01;
 }
 
 :HALT is op0_7 = 0x00 {
-# TODO(siggi}: Implement me.
+  # HALT is a NOP for disassembly.
+  goto inst_next;
 }
 
 :CCL is op0_7 = 0x02 {
-# TODO(siggi}: Implement me.
+  $(CYL_flag) = 0;
 }
 
 :SCL is op0_7 = 0x03 {
-# TODO(siggi}: Implement me.
+  $(CYL_flag) = 1;
 }
 
 :DINT is op0_7 = 0x04 {
-# TODO(siggi}: Implement me.
+  $(IE_flag) = 0;
 }
 
 :IEN is op0_7 = 0x5 {
-# TODO(siggi}: Implement me.
+  $(IE_flag) = 1;
 }
 
 :CSA is op0_7 = 0x06 {
-# TODO(siggi}: Implement me.
+  AC = SR;
 }
 
 :CAS is op0_7 = 0x07 {
-# TODO(siggi}: Implement me.
+  SR = AC;
 }
 
 :NOP is op0_7 = 0x08 {
