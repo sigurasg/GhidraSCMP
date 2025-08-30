@@ -201,6 +201,66 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	}
 
 	@Test
+	public void SIO() {
+		write(0x0100, 0x19);  // SIO.
+
+		// TODO(siggi): Test SIN and SOUT once added.
+		setE(0xAA);
+		stepFrom((0x0100));
+		assertEquals(0x55, getE());
+	}
+
+	@Test
+	public void SR() {
+		write(0x0100, 0x1C);  // SR.
+
+		setAC(0xAA);
+		setSR(0xFF);
+		stepFrom((0x0100));
+		assertEquals(0x55, getAC());
+		assertEquals(0xFF, getSR());
+	}
+
+	@Test
+	public void SRL() {
+		write(0x0100, 0x1D);  // SRL.
+
+		setAC(0xAA);
+		setSR(0xFF);
+		stepFrom((0x0100));
+		assertEquals(0xD5, getAC());
+		assertEquals(0xFF, getSR());
+	}
+
+	@Test
+	public void RR() {
+		write(0x0100, 0x1E);  // RR.
+
+		setAC(0x41);
+		setSR(0xFF);
+		stepFrom((0x0100));
+		assertEquals(0xA0, getAC());
+		assertEquals(0xFF, getSR());
+	}
+
+	@Test
+	public void RRL() {
+		write(0x0100, 0x1F);  // RRL.
+
+		setAC(0x01);
+		setSR(0xFF);
+		stepFrom((0x0100));
+		assertEquals(0x80, getAC());
+		assertEquals(0xFF, getSR());
+
+		setAC(0x01);
+		setSR(0x00);
+		stepFrom((0x0100));
+		assertEquals(0x00, getAC());
+		assertEquals(0x80, getSR());
+	}
+
+	@Test
 	public void HALT() {
 		assertIsNOP(0x00);
 

@@ -300,23 +300,26 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :SIO is op0_7 = 0x19 {
-  # TODO(siggi}: Implement me.
+  # TODO(siggi): Add a register to contain SIN and SOUT.
+  E = E >> 1;
 }
 
 :SR is op0_7 = 0x1C {
-  # TODO(siggi}: Implement me.
+  AC = AC >> 1;
 }
 
 :SRL is op0_7 = 0x1D {
-  # TODO(siggi}: Implement me.
+  AC = (AC >> 1) | ($(CYL_flag) << 7);
 }
 
 :RR is op0_7 = 0x1E {
-  # TODO(siggi}: Implement me.
+  AC = (AC >> 1) | (AC << 7);
 }
 
 :RRL is op0_7 = 0x1F {
-  # TODO(siggi}: Implement me.
+  local tmp:1 = AC;
+  AC = (AC >> 1) | ($(CYL_flag) << 7);
+  $(CYL_flag) = tmp & 0x01;
 }
 
 :HALT is op0_7 = 0x00 {
