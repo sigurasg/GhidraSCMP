@@ -73,6 +73,40 @@ macro additionWithCarry(op) {
     AC = tmpResult + carryIn;
 }
 
+macro decimalAddition(op) {
+  local rl:1 = AC & 0x0F;
+  local rh:1 = AC >> 4;
+  local opl:1 = op & 0x0F;
+  local oph:1 = op >> 4;
+
+  # Add in the carry.
+  opl = opl + $(CYL_flag);
+
+  rl = rl + opl;
+  if (rl <= 0x09)
+    goto <no_half_carry>;
+
+  rl = rl - 10;
+  oph = oph + 1;
+  
+  <no_half_carry>
+
+  rh = rh + oph;
+  if (rh <= 9)
+    goto <no_full_carry>;
+  
+  rh = rh - 10;
+  $(CYL_flag) = 1;
+  goto <out>;
+
+  <no_full_carry>
+
+  $(CYL_flag) = 0;
+
+  <out>
+  AC = (rh << 4) | rl;
+}
+
 # PC-relative.
 EA: loc is op_m = 0 & op_ptr = 0; imm8 != 0x80 & disp8
     [ loc = (inst_start & 0xF000) | ((inst_next + disp8) & 0xFFF); ] {
@@ -162,8 +196,7 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :DAD EA is op3_7 = 0x1D ... & EA {
-  # TODO(siggi): writeme!
-  AC = AC ^ *EA;
+  decimalAddition(*EA);
 }
 
 :ADD EA is op3_7 = 0x1E ... & EA {
@@ -203,8 +236,7 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :DAI imm8 is op0_7 = 0xEC; imm8 {
-  # TODO(siggi): Implement.
-  AC = imm8;
+  decimalAddition(imm8);
 }
 
 :ADI imm8 is op0_7 = 0xF4; imm8 {
@@ -268,16 +300,15 @@ PTR: disp8(op_ptr) is op_ptr; disp8 {
 }
 
 :DAE is op0_7 = 0x68 {
-  # TODO(siggi): Implement me.
+  decimalAddition(E);
 }
 
 :ADE is op0_7 = 0x70 {
-  # TODO(siggi): Implement me.
-  AC = AC + E;
+  additionWithCarry(E);
 }
 
 :CAE is op0_7 = 0x78 {
-  # TODO(siggi): Implement me.
+  additionWithCarry(0xFF ^ E);
 }
 
 :XPAL op_ptr is op2_7 = 0x0C & op_ptr {
