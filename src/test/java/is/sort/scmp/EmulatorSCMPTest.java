@@ -60,6 +60,30 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	}
 
 	@Test
+	public void AutoIndexedEAWithE() {
+		// Test that the @E(ptr) addressing mode pre-decrements
+		// or post-increments, depending on the value of E.
+		final int PC = 0x0100;
+
+		// 	ST @E(P1)
+		// 	LD @E(P1)
+		write(PC, 0xCD, 0x80, 0xC5, 0x80);
+
+		setAC(0xAA);
+		setP1(0x1000);
+		setE(0x10);
+		stepFrom(PC);
+		assertEquals(0x1010, getP1());
+		assertEquals(0xAA, readByte(0x1000));
+
+		setAC(0x00);
+		setE(0xF0);
+		step();
+		assertEquals(0x1000, getP1());
+		assertEquals(0xAA, getAC());
+	}
+
+	@Test
 	public void LD_PCRel() {
 		final int PC = 0x8100;
 		write(PC, 0xC0, 0x10);  // LD 0x8112
@@ -162,6 +186,16 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		write(0x0100, 0x91, 0x12);
 		stepFrom(0x0100);
 		assertEquals(0x0212, getPC());
+	}
+
+	@Test
+	public void JMP_P1RelWithE() {
+		// P1-relative JMP.
+		setP1(0x0200);
+		setE(0x20);
+		write(0x0100, 0x91, 0x80);  // JMP E(P1)
+		stepFrom(0x0100);
+		assertEquals(0x0220, getPC());
 	}
 
 	@Test
