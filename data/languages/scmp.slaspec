@@ -14,6 +14,15 @@
 
 # Sleigh specification file for the SC/MP Processor
 
+# This processor has a couple of interesting quirks.
+# 1. During the execution of any instruction, the PC register points to the last
+#    byte fetched, whether that byte is an opcode or a displacement.
+# 2. PC is incremented before fetching the next instruction.
+#    This means that any instruction that modifies PC effectively targets the
+#    byte after the value that's assigned to PC.
+# 3. Reset zeros PC, but because PC is incremented before instruction fetch,
+#    the RST routine actually starts at address 0x0001.
+
 define endian=big;
 define alignment=1;
 
@@ -77,9 +86,18 @@ macro autoIndexedEa(dst, ptr, d) {
 
 # Because inst_next doesn't wrap around properly,
 # use a special macro to deal with that.
+# Note also that the reference PC is not inst_next,
+# but rather the address of the displacement.
 macro dispPc(dst, disp) {
   dst = inst_start & 0xF000;
-  dst = dst | ((inst_next + disp) & 0x0FFF);
+  dst = dst | ((inst_start + 1 + disp) & 0x0FFF);
+}
+
+# Because of the increment prior to instruction fetch
+# the JMP instructions need an extra count. 
+macro dispPcJmp(dst, disp) {
+  dst = inst_start & 0xF000;
+  dst = dst | ((inst_start + 2 + disp) & 0x0FFF);
 }
 
 macro additionWithCarry(op) {
@@ -128,7 +146,7 @@ macro decimalAddition(op) {
 
 # PC-relative.
 EA: loc is op_m = 0 & op_ptr = 0; imm8 != 0x80 & disp8
-    [ loc = (inst_start & 0xF000) | ((inst_next + disp8) & 0x0FFF); ] {
+    [ loc = (inst_start & 0xF000) | ((inst_start + 1 + disp8) & 0x0FFF); ] {
   local ret:2;
   dispPc(ret, disp8);
   export ret;
@@ -165,7 +183,7 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
 }
 
 PTR: loc is op_ptr = 0; imm8 != 0x80 & disp8
-    [ loc = (inst_start & 0xF000) | ((inst_next + disp8) & 0x0FFF); ] {
+    [ loc = (inst_start & 0xF000) | ((inst_start + 1 + disp8) & 0x0FFF); ] {
   local ret:2;
   dispPc(ret, disp8);
   export ret;
@@ -183,6 +201,28 @@ PTR: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
   dispEa(ret, op_ptr, sext(E));
   export ret;
 }
+
+PTRJmp: loc is op_ptr = 0; imm8 != 0x80 & disp8
+    [ loc = (inst_start & 0xF000) | ((inst_start + 2 + disp8) & 0x0FFF); ] {
+  local ret:2;
+  dispPcJmp(ret, disp8);
+  export ret;
+}
+
+PTRJmp: disp8(op_ptr) is op_ptr; imm8 != 0x80 & disp8 {
+  local tmp:2 = disp8 + 1;
+  local ret:2;
+  dispEa(ret, op_ptr, tmp);
+  export ret;
+}
+
+# TODO(siggi): Special case for E(PC)?
+PTRJmp: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
+  local ret:2;
+  dispEa(ret, op_ptr, sext(E) + 1);
+  export ret;
+}
+
 
 # Instructions in order of appearance in the
 # SC/MP Programming and Assembler Manual.
@@ -258,28 +298,30 @@ PTR: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
   additionWithCarry(~imm8);
 }
 
-:JMP PTR is op2_7 = 0x24 ... & PTR {
-  goto [PTR];
+:JMP PTRJmp is op2_7 = 0x24 ... & PTRJmp {
+  goto [PTRJmp];
 }
 
-:JP PTR is op2_7 = 0x25 ... & PTR {
+:JP PTRJmp is op2_7 = 0x25 ... & PTRJmp {
   if (AC & 0x80)
     goto <nojmp>;
-  goto [PTR];
+
+  goto [PTRJmp];
   <nojmp>
 }
 
-:JZ PTR is op2_7 = 0x26 ... & PTR {
+:JZ PTRJmp is op2_7 = 0x26 ... & PTRJmp {
   if (AC != 0)
     goto <nojmp>;
-  goto [PTR];
+
+  goto [PTRJmp];
   <nojmp>
 }
 
-:JNZ PTR is op2_7 = 0x27 ... & PTR {
+:JNZ PTRJmp is op2_7 = 0x27 ... & PTRJmp {
   if (AC == 0)
     goto <nojmp>;
-  goto [PTR];
+  goto [PTRJmp];
   <nojmp>
 }
 
@@ -322,13 +364,14 @@ PTR: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
   additionWithCarry(~E);
 }
 
+# TODO(siggi): Special case for PC!
 :XPAL op_ptr is op2_7 = 0x0C & op_ptr {
-  # TODO(siggi): Does this need special casing for PC?
   local tmp:1 = op_ptr[0,8];
   op_ptr[0,8] = AC;
   AC = tmp;
 }
 
+# TODO(siggi): Special case for PC!
 :XPAH op_ptr is op2_7 = 0x0D & op_ptr {
   # TODO(siggi): Does this need special casing for PC?
   local tmp:1 = op_ptr[8,8];
@@ -337,11 +380,9 @@ PTR: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
 }
 
 :XPPC op_ptr is op2_7 = 0x0F & op_ptr {
-  # This instruction doesn't behave as described in the manual.
-  # Rather than incrementing PC before the swap, it increments
-  # it after the swap. The end result is the same, except the
-  # pointer register must always be one short of the destination.
-  local tmp:2 = (op_ptr + 1) & 0x0FFF;
+  # PC is incremented after the assignment, so the effective
+  # PC is one larger than op_ptr.
+  local tmp:2 = (op_ptr & 0xF000) | (op_ptr + 1) & 0x0FFF;
   op_ptr = inst_start;
   goto [tmp];
 }
