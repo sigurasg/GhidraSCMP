@@ -197,7 +197,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setE(0x20);
 		write(0x0100, 0x91, 0x80);  // JMP E(P1)
 		stepFrom(0x0100);
-		assertEquals(0x0220, getPC());
+		assertEquals(0x0221, getPC());
 	}
 
 	@Test
