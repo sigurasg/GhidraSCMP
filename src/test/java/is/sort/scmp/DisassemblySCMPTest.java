@@ -39,15 +39,15 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 	public void EA() {
 		// PC-relative.
 		// Zero, positive and negative offsets.
-		assertDisassemblesTo("LD 0x2", 0xC0, 0x00);
-		assertDisassemblesTo("LD 0x81", 0xC0, 0x7F);
+		assertDisassemblesTo("LD 0x1", 0xC0, 0x00);
+		assertDisassemblesTo("LD 0x80", 0xC0, 0x7F);
 		// Negative offset should wrap around modulo 0x1000.
-		assertDisassemblesTo("LD 0xf83", 0xC0, 0x81);
+		assertDisassemblesTo("LD 0xf82", 0xC0, 0x81);
 
 		// Test wraparound.
-		assertDisassemblesAt("LD 0x7000", 0x7FFE, 0xC0, 0x00);
-		assertDisassemblesAt("LD 0x707f", 0x7FFE, 0xC0, 0x7F);
-		assertDisassemblesAt("LD 0x8f83", 0X8000, 0xC0, 0x81);
+		assertDisassemblesAt("LD 0x7000", 0x7FFE, 0xC0, 0x01);
+		assertDisassemblesAt("LD 0x707e", 0x7FFE, 0xC0, 0x7F);
+		assertDisassemblesAt("LD 0x8f83", 0X8000, 0xC0, 0x82);
 
 		// Pointer-Relative.
 		assertDisassemblesTo("LD 0x0(P1)", 0xC1, 0x00);
@@ -64,7 +64,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void LD() {
-		assertDisassemblesTo("LD 0x10", 0xC0, 0x0E);
+		assertDisassemblesTo("LD 0xf", 0xC0, 0x0E);
 		assertDisassemblesTo("LD 0xe(P1)", 0xC1, 0x0E);
 		assertDisassemblesTo("LD 0xe(P2)", 0xC2, 0x0E);
 		assertDisassemblesTo("LD 0xe(P3)", 0xC3, 0x0E);
@@ -78,7 +78,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void ST() {
-		assertDisassemblesTo("ST 0x10", 0xC8, 0x0E);
+		assertDisassemblesTo("ST 0xf", 0xC8, 0x0E);
 		assertDisassemblesTo("ST 0xe(P1)", 0xC9, 0x0E);
 		assertDisassemblesTo("ST 0xe(P2)", 0xCA, 0x0E);
 		assertDisassemblesTo("ST 0xe(P3)", 0xCB, 0x0E);
@@ -92,7 +92,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void AND() {
-		assertDisassemblesTo("AND 0x10", 0xD0, 0x0E);
+		assertDisassemblesTo("AND 0xf", 0xD0, 0x0E);
 		assertDisassemblesTo("AND 0xe(P1)", 0xD1, 0x0E);
 		assertDisassemblesTo("AND 0xe(P2)", 0xD2, 0x0E);
 		assertDisassemblesTo("AND 0xe(P3)", 0xD3, 0x0E);
@@ -106,7 +106,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void OR() {
-		assertDisassemblesTo("OR 0x10", 0xD8, 0x0E);
+		assertDisassemblesTo("OR 0xf", 0xD8, 0x0E);
 		assertDisassemblesTo("OR 0xe(P1)", 0xD9, 0x0E);
 		assertDisassemblesTo("OR 0xe(P2)", 0xDA, 0x0E);
 		assertDisassemblesTo("OR 0xe(P3)", 0xDB, 0x0E);
@@ -120,7 +120,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void XOR() {
-		assertDisassemblesTo("XOR 0x10", 0xE0, 0x0E);
+		assertDisassemblesTo("XOR 0xf", 0xE0, 0x0E);
 		assertDisassemblesTo("XOR 0xe(P1)", 0xE1, 0x0E);
 		assertDisassemblesTo("XOR 0xe(P2)", 0xE2, 0x0E);
 		assertDisassemblesTo("XOR 0xe(P3)", 0xE3, 0x0E);
@@ -134,7 +134,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void DAD() {
-		assertDisassemblesTo("DAD 0x10", 0xE8, 0x0E);
+		assertDisassemblesTo("DAD 0xf", 0xE8, 0x0E);
 		assertDisassemblesTo("DAD 0xe(P1)", 0xE9, 0x0E);
 		assertDisassemblesTo("DAD 0xe(P2)", 0xEA, 0x0E);
 		assertDisassemblesTo("DAD 0xe(P3)", 0xEB, 0x0E);
@@ -148,7 +148,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void ADD() {
-		assertDisassemblesTo("ADD 0x10", 0xF0, 0x0E);
+		assertDisassemblesTo("ADD 0xf", 0xF0, 0x0E);
 		assertDisassemblesTo("ADD 0xe(P1)", 0xF1, 0x0E);
 		assertDisassemblesTo("ADD 0xe(P2)", 0xF2, 0x0E);
 		assertDisassemblesTo("ADD 0xe(P3)", 0xF3, 0x0E);
@@ -162,7 +162,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void CAD() {
-		assertDisassemblesTo("CAD 0x10", 0xF8, 0x0E);
+		assertDisassemblesTo("CAD 0xf", 0xF8, 0x0E);
 		assertDisassemblesTo("CAD 0xe(P1)", 0xF9, 0x0E);
 		assertDisassemblesTo("CAD 0xe(P2)", 0xFA, 0x0E);
 		assertDisassemblesTo("CAD 0xe(P3)", 0xFB, 0x0E);
@@ -176,7 +176,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void ILD() {
-		assertDisassemblesTo("ILD 0x10", 0xA8, 0x0E);
+		assertDisassemblesTo("ILD 0xf", 0xA8, 0x0E);
 		assertDisassemblesTo("ILD 0xe(P1)", 0xA9, 0x0E);
 		assertDisassemblesTo("ILD 0xe(P2)", 0xAA, 0x0E);
 		assertDisassemblesTo("ILD 0xe(P3)", 0xAB, 0x0E);
@@ -184,7 +184,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 
 	@Test
 	public void DLD() {
-		assertDisassemblesTo("DLD 0x10", 0xB8, 0x0E);
+		assertDisassemblesTo("DLD 0xf", 0xB8, 0x0E);
 		assertDisassemblesTo("DLD 0xe(P1)", 0xB9, 0x0E);
 		assertDisassemblesTo("DLD 0xe(P2)", 0xBA, 0x0E);
 		assertDisassemblesTo("DLD 0xe(P3)", 0xBB, 0x0E);

@@ -38,14 +38,14 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		write(PC, 0xCD, 0x10, 0xC5, 0xF0, 0xCD, 0xF0, 0xC5, 0x10);
 
 		setAC(0xAA);
-		setP1(0x1000);
+		setP1(0x01000);
 		stepFrom(PC);
 		assertEquals(0x1010, getP1());
-		assertEquals(0xAA, readByte(0x1000));
+		assertEquals(0xAA, readByte(0x01000));
 
 		setAC(0x00);
 		step();
-		assertEquals(0x1000, getP1());
+		assertEquals(0x01000, getP1());
 		assertEquals(0xAA, getAC());
 
 		step();
@@ -55,7 +55,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setAC(0x00);
 		step();
 		step();
-		assertEquals(0x1000, getP1());
+		assertEquals(0x01000, getP1());
 		assertEquals(0xAA, getAC());
 	}
 
@@ -70,24 +70,24 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		write(PC, 0xCD, 0x80, 0xC5, 0x80);
 
 		setAC(0xAA);
-		setP1(0x1000);
+		setP1(0x01000);
 		setE(0x10);
 		stepFrom(PC);
 		assertEquals(0x1010, getP1());
-		assertEquals(0xAA, readByte(0x1000));
+		assertEquals(0xAA, readByte(0x01000));
 
 		setAC(0x00);
 		setE(0xF0);
 		step();
-		assertEquals(0x1000, getP1());
+		assertEquals(0x01000, getP1());
 		assertEquals(0xAA, getAC());
 	}
 
 	@Test
 	public void LD_PCRel() {
 		final int PC = 0x8100;
-		write(PC, 0xC0, 0x10);  // LD 0x8112
-		write(0x8112, 0xFF);
+		write(PC, 0xC0, 0x10);  // LD 0x8111
+		write(0x8111, 0xFF);
 		stepFrom(PC);
 		assertEquals(getAC(), 0xFF);
 	}
@@ -155,12 +155,12 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void DAE() {
-		write(0x100, 0x68);
+		write(0x0100, 0x68);
 
 		setSR(0x00);
 		setAC(0x89);
 		setE(0x11);
-		stepFrom(0x100);
+		stepFrom(0x0100);
 		assertEquals(0x00, getAC());
 		assertEquals(0x80, getSR());
 
@@ -171,19 +171,21 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	public void JMP_PCRel() {
 		final int PC = 0x8100;
 		// PC-relative JMP.
-		write(PC, 0x90, 0x10, 0x90, 0xFF);
+		// JMP 0x8112
+		// JMP 0x8102
+		write(PC, 0x90, 0x10, 0x90, 0xFE);
 		stepFrom(PC);
 		assertEquals(PC + 0x12, getPC());
 
 		stepFrom(PC + 2);
-		assertEquals(PC + 0x03, getPC());
+		assertEquals(PC + 0x02, getPC());
 	}
 
 	@Test
 	public void JMP_P1Rel() {
 		// P1-relative JMP.
 		setP1(0x0200);
-		write(0x0100, 0x91, 0x12);
+		write(0x0100, 0x91, 0x11);  // JMP 
 		stepFrom(0x0100);
 		assertEquals(0x0212, getPC());
 	}
@@ -195,12 +197,12 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setE(0x20);
 		write(0x0100, 0x91, 0x80);  // JMP E(P1)
 		stepFrom(0x0100);
-		assertEquals(0x0220, getPC());
+		assertEquals(0x0221, getPC());
 	}
 
 	@Test
 	public void JP() {
-		write(0x100, 0x94, 0x10);
+		write(0x0100, 0x94, 0x10);  // JP 0x0112
 
 		// Test zero.
 		setAC(0x00);
@@ -220,7 +222,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void JZ() {
-		write(0x100, 0x98, 0x10);
+		write(0x0100, 0x98, 0x10);  // JZ 0x0112
 
 		// Test zero.
 		setAC(0x00);
@@ -240,7 +242,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void JNZ() {
-		write(0x100, 0x9C, 0x10);
+		write(0x0100, 0x9C, 0x10);  // JNZ 0x0112
 
 		// Test zero.
 		setAC(0x00);
@@ -265,21 +267,21 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void XAE() {
-		write(0x100, 0x01);	// XAE
+		write(0x0100, 0x01);	// XAE
 		setAC(0x01);
 		setE(0x02);
-		stepFrom(0x100);
+		stepFrom(0x0100);
 		assertEquals(0x02, getAC());
 		assertEquals(0x01, getE());
 	}
 
 	@Test
 	public void XPAL() {
-		write(0x100, 0x31);  // XPAL P1.
+		write(0x0100, 0x31);  // XPAL P1.
 
 		setAC(0x01);
 		setP1(0x0203);
-		stepFrom(0x100);
+		stepFrom(0x0100);
 
 		assertEquals(0x03, getAC());
 		assertEquals(0x0201, getP1());
