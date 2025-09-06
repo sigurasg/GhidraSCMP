@@ -11,7 +11,7 @@
   </global>
   <stackpointer register="P2" space="ram"/>
   <default_proto>
-    <prototype name="__asmA" extrapop="2" stackshift="2" strategy="register">
+    <prototype name="default" extrapop="0" stackshift="0" strategy="register">
       <input>
         <pentry minsize="1" maxsize="1">
           <register name="AC"/>
@@ -23,8 +23,8 @@
         </pentry>
       </output>
       <unaffected>
-        <register name="P1"/>
         <register name="P2"/>
+        <register name="P3"/>
       </unaffected>
     </prototype>
   </default_proto>
