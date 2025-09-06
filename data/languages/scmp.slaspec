@@ -376,7 +376,6 @@ PTRJmp: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
 
 # TODO(siggi): Special case for PC!
 :XPAH op_ptr is op2_7 = 0x0D & op_ptr {
-  # TODO(siggi): Does this need special casing for PC?
   local tmp:1 = op_ptr[8,8];
   op_ptr[8,8] = AC;
   AC = tmp;

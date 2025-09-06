@@ -22,8 +22,12 @@
           <register name="AC"/>
         </pentry>
       </output>
+      <returnaddress>
+        <register name="P3"/>
+      </returnaddress>
       <unaffected>
         <register name="P2"/>
+<!-- TODO(siggi): Does this make sense? -->
         <register name="P3"/>
       </unaffected>
     </prototype>
