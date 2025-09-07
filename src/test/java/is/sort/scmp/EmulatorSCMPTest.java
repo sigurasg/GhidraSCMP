@@ -191,13 +191,15 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	}
 
 	@Test
-	public void JMP_P1RelWithE() {
+	public void JMP_P1RelWithNoE() {
 		// P1-relative JMP.
 		setP1(0x0200);
 		setE(0x20);
-		write(0x0100, 0x91, 0x80);  // JMP E(P1)
+		// Note that a displacement of 0x80 does not imply E for
+		// DLD/ILD/JMP instruction forms.
+		write(0x0100, 0x91, 0x80);  // JMP -0x80(P1)
 		stepFrom(0x0100);
-		assertEquals(0x0221, getPC());
+		assertEquals(0x0181, getPC());
 	}
 
 	@Test

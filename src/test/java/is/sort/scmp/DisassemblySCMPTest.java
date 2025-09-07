@@ -189,7 +189,7 @@ public class DisassemblySCMPTest extends AbstractIntegrationTest {
 		assertDisassemblesTo("DLD 0xe(P2)", 0xBA, 0x0E);
 		assertDisassemblesTo("DLD 0xe(P3)", 0xBB, 0x0E);
 
-		assertDisassemblesTo("DLD E(P3)", 0xBB, 0x80);
+		assertDisassemblesTo("DLD -0x80(P3)", 0xBB, 0x80);
 	}
 
 	@Test
