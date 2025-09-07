@@ -182,22 +182,16 @@ EA: @E(op_ptr) is op_m = 1 & op_ptr & E; imm8 = 0x80 {
   export ret;
 }
 
-PTR: loc is op_ptr = 0; imm8 != 0x80 & disp8
+PTR: loc is op_ptr = 0; disp8
     [ loc = (inst_start & 0xF000) | ((inst_start + 1 + disp8) & 0x0FFF); ] {
   local ret:2;
   dispPc(ret, disp8);
   export ret;
 }
 
-PTR: disp8(op_ptr) is op_ptr; imm8 != 0x80 & disp8 {
+PTR: disp8(op_ptr) is op_ptr; disp8 {
   local ret:2;
   dispEa(ret, op_ptr, disp8);
-  export ret;
-}
-
-PTR: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
-  local ret:2;
-  dispEa(ret, op_ptr, sext(E));
   export ret;
 }
 
@@ -206,23 +200,17 @@ PTR: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
 # The effective PC returned is also one larger than the effective
 # address to allow the instruction stream to goto the right
 # address without a second adjustment in each JMP instruction.
-PTRJmp: loc is op_ptr = 0; imm8 != 0x80 & disp8
+PTRJmp: loc is op_ptr = 0; disp8
     [ loc = (inst_start & 0xF000) | ((inst_start + 2 + disp8) & 0x0FFF); ] {
   local ret:2;
   dispPcJmp(ret, disp8);
   export ret;
 }
 
-PTRJmp: disp8(op_ptr) is op_ptr; imm8 != 0x80 & disp8 {
+PTRJmp: disp8(op_ptr) is op_ptr; disp8 {
   local tmp:2 = disp8 + 1;
   local ret:2;
   dispEa(ret, op_ptr, tmp);
-  export ret;
-}
-
-PTRJmp: E(op_ptr) is op_ptr & E; imm8 = 0x80 & disp8 {
-  local ret:2;
-  dispEa(ret, op_ptr, sext(E) + 1);
   export ret;
 }
 
