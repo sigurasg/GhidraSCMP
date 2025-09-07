@@ -11,7 +11,7 @@
   </global>
   <stackpointer register="P2" space="ram"/>
   <default_proto>
-    <prototype name="__asmA" extrapop="2" stackshift="2" strategy="register">
+    <prototype name="default" extrapop="0" stackshift="0" strategy="register">
       <input>
         <pentry minsize="1" maxsize="1">
           <register name="AC"/>
@@ -22,9 +22,13 @@
           <register name="AC"/>
         </pentry>
       </output>
+      <returnaddress>
+        <register name="P3"/>
+      </returnaddress>
       <unaffected>
-        <register name="P1"/>
         <register name="P2"/>
+<!-- TODO(siggi): Does this make sense? -->
+        <register name="P3"/>
       </unaffected>
     </prototype>
   </default_proto>
