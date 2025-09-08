@@ -66,6 +66,10 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		emulator.writeRegister("E", value);
 	}
 
+	protected void setSERIAL(int value) {
+		emulator.writeRegister("SERIAL", value);
+	}
+
 	protected void setPC(int value) {
 		emulator.writeRegister("PC", value);
 	}
@@ -92,6 +96,10 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 
 	protected int getE() {
 		return emulator.readRegister("E").intValue();
+	}
+
+	protected int getSERIAL() {
+		return emulator.readRegister("SERIAL").intValue();
 	}
 
 	protected int getPC() {

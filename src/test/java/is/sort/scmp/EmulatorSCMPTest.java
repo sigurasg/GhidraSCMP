@@ -317,10 +317,18 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	public void SIO() {
 		write(0x0100, 0x19);  // SIO.
 
-		// TODO(siggi): Test SIN and SOUT once added.
+		setSERIAL(0x00);
 		setE(0xAA);
 		stepFrom((0x0100));
 		assertEquals(0x55, getE());
+		assertEquals(getSERIAL(), 0x00);
+
+		// Shift serial bits in/out.
+		setSERIAL(0x01);
+		setE(0x55);
+		stepFrom((0x0100));
+		assertEquals(0xAA, getE());
+		assertEquals(getSERIAL(), 0x81);
 	}
 
 	@Test
