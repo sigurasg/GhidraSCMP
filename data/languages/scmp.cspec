@@ -18,8 +18,8 @@
         </pentry>
       </input>
       <output>
-        <pentry minsize="1" maxsize="1">
-          <register name="AC"/>
+        <pentry minsize="2" maxsize="2">
+          <register name="P3"/>
         </pentry>
       </output>
       <returnaddress>
@@ -27,8 +27,6 @@
       </returnaddress>
       <unaffected>
         <register name="P2"/>
-<!-- TODO(siggi): Does this make sense? -->
-        <register name="P3"/>
       </unaffected>
     </prototype>
   </default_proto>
