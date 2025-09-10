@@ -185,7 +185,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	public void JMP_P1Rel() {
 		// P1-relative JMP.
 		setP1(0x0200);
-		write(0x0100, 0x91, 0x11);  // JMP 
+		write(0x0100, 0x91, 0x11);  // JMP 0x10(P1)
 		stepFrom(0x0100);
 		assertEquals(0x0212, getPC());
 	}

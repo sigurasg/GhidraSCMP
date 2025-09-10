@@ -75,7 +75,8 @@ macro dispEa(dst, reg, disp) {
 }
 
 macro autoIndexedEa(dst, ptr, disp) {
-  local tmp:2 = addDispl(ptr, disp);
+  local d:2 = sext(disp);
+  local tmp:2 = addDispl(ptr, d);
 
   dst = ptr;
   if (disp s>= 0)
@@ -95,14 +96,16 @@ macro autoIndexedEa(dst, ptr, disp) {
 # but rather the address of the displacement.
 macro dispPc(dst, disp) {
   local start:2 = inst_start;
-  dst = addDispl(start, disp + 1);
+  local tmp:2 = sext(disp) + 1;
+  dst = addDispl(start, tmp);
 }
 
 # Because of the increment prior to instruction fetch
 # the JMP instructions need an extra count.
 macro dispPcJmp(dst, disp) {
   local start:2 = inst_start;
-  dst = addDispl(start, disp + 2);
+  local tmp:2 = sext(disp) + 2;
+  dst = addDispl(start, tmp);
 }
 
 macro additionWithCarry(op) {
@@ -159,7 +162,8 @@ EA: loc is op_m = 0 & op_ptr = 0; imm8 != 0x80 & disp8 & imm8
 
 # Pointer-relative.
 EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
-  local ret:2 = addDispl(op_ptr:2, disp8:1);
+  local tmp:2 = sext(disp8:1);
+  local ret:2 = addDispl(op_ptr:2, tmp);
   export ret;
 }
 

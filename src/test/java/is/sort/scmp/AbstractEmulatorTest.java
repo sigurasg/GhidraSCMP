@@ -28,6 +28,10 @@ import ghidra.program.model.address.Address;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
+
+// TODO(siggi): The emulator doesn't heed pcodeops, so the workaround
+//    is to inject the pcodeop in Java.
+//    See: https://github.com/NationalSecurityAgency/ghidra/issues/6151
 public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 
 	public AbstractEmulatorTest(String lang) {
@@ -136,17 +140,13 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 
 	protected void stepFrom(int addr) {
 		setPC(addr);
-		try {
-			emulator.step(TaskMonitor.DUMMY);
-		}
-		catch (CancelledException e) {
-			fail("Failed to step.", e);
-		}
+		step();
 	}
 
 	protected void step() {
 		try {
-			emulator.step(TaskMonitor.DUMMY);
+			if (!emulator.step(TaskMonitor.DUMMY))
+				fail("Step failed: " + emulator.getLastError());
 		}
 		catch (CancelledException e) {
 			fail("Failed to step.", e);
