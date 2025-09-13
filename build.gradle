@@ -62,7 +62,7 @@ dependencies {
 }
 
 task compileSleigh(type: JavaExec) {
-    description = 'Run sleigh on the MC6800 languages specs.'
+    description = 'Run sleigh on the SC/MP languages specs.'
 
     // TODO(siggi): This wants to be a pattern replacement of some kind?
     FileCollection slaFiles = files(
@@ -111,7 +111,7 @@ buildExtension {
     exclude 'gradle/**'
     exclude 'eclipse/**'
 
-    dependsOn('compileSleigh')
+    dependsOn(compileSleigh)
     dependsOn(copySleighSources)
 }
 

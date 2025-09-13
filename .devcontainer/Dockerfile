@@ -35,6 +35,7 @@ RUN \
             openjdk-21-dbg \
             wget \
             unzip \
+            less \
             --no-install-recommends && \
     wget --progress=bar:force -O /tmp/ghidra.zip ${GHIDRA_URL} && \
     echo "$GHIDRA_SHA /tmp/ghidra.zip" | sha256sum -c - && \
