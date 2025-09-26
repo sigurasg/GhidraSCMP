@@ -87,7 +87,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void ADDI() {
 		assemble(0x0100, "ADI 0x10");
-
 		// Add with no carry.
 		setSR(0x00);
 		setAC(0x00);
