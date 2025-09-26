@@ -26,13 +26,11 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void AutoIndexedEA() {
 		final int PC = 0x0100;
-
 		assemble(PC,
 			"ST @0x10(P1)",		// Post-increment
 			"LD @-0x10(P1)",
 			"ST @-0x10(P1)",			// Pre-decrement
 			"LD @0x10(P1)");
-
 		setAC(0xAA);
 		setP1(0x01000);
 		stepFrom(PC);
@@ -60,11 +58,9 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		// Test that the @E(ptr) addressing mode pre-decrements
 		// or post-increments, depending on the value of E.
 		final int PC = 0x0100;
-
 		assemble(PC,
 			"ST @E(P1)",
 			"LD @E(P1)");
-
 		setAC(0xAA);
 		setP1(0x01000);
 		setE(0x10);
@@ -82,9 +78,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void LD_PCRel() {
 		final int PC = 0x8100;
-
 		assemble(PC, "LD 0x8111");
-
 		write(0x8111, 0xFF);
 		stepFrom(PC);
 		assertEquals(getAC(), 0xFF);
@@ -142,7 +136,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		// Cheat, knowing that the implementation is essentially
 		// just ADI with complement.
 		assemble(0x0100, "CAI 0xEF");
-
 		// No carry.
 		setSR(0x00);
 		setAC(0x00);
@@ -154,7 +147,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void DAE() {
 		assemble(0x0100, "DAE");
-
 		setSR(0x00);
 		setAC(0x89);
 		setE(0x11);
@@ -172,7 +164,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assemble(PC,
 			"JMP 0x8112",
 			"JMP 0x8102");
-
 		stepFrom(PC);
 		assertEquals(PC + 0x12, getPC());
 
@@ -204,7 +195,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void JP() {
 		assemble(0x0100, "JP 0x0112");
-
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
@@ -224,7 +214,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void JZ() {
 		assemble(0x0100, "JZ 0x0112");
-
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
@@ -244,7 +233,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void JNZ() {
 		assemble(0x0100, "JNZ 0x0112");
-
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
@@ -279,7 +267,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void XPAL() {
 		assemble(0x0100, "XPAL P1");
-
 		setAC(0x01);
 		setP1(0x0203);
 		stepFrom(0x0100);
@@ -291,7 +278,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void XPAH() {
 		assemble(0x0100, "XPAH P1");
-
 		setAC(0x01);
 		setP1(0x0203);
 		stepFrom(0x0100);
@@ -303,7 +289,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void XPPC() {
 		assemble(0x0100, "XPPC P1");
-
 		setP1(0x0203);
 		stepFrom(0x0100);
 
@@ -315,7 +300,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void SIO() {
 		assemble(0x0100, "SIO");
-
 		setSERIAL(0x00);
 		setE(0xAA);
 		stepFrom((0x0100));
@@ -333,7 +317,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void SR() {
 		assemble(0x0100, "SR");
-
 		setAC(0xAA);
 		setSR(0xFF);
 		stepFrom((0x0100));
@@ -344,7 +327,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void SRL() {
 		assemble(0x0100, "SRL");
-
 		setAC(0xAA);
 		setSR(0xFF);
 		stepFrom((0x0100));
@@ -355,7 +337,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void RR() {
 		assemble(0x0100, "RR");
-
 		setAC(0x41);
 		setSR(0xFF);
 		stepFrom((0x0100));
@@ -366,7 +347,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void RRL() {
 		assemble(0x0100, "RRL");
-
 		setAC(0x01);
 		setSR(0xFF);
 		stepFrom((0x0100));
