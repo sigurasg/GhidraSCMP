@@ -6,6 +6,7 @@
   "java.format.settings.url": "./eclipse/GhidraEclipseFormatter.xml",
   "java.project.sourcePaths": [
     "src/test/java",
+    "ghidra-Ghidra_11.4.2_build",
   ],
   "java.project.outputPath": "bin/test/java",
   "java.project.referencedLibraries": {
@@ -14,5 +15,6 @@
     "sources": {
     }
   },
-  "java.debug.logLevel": "verbose"
+  "java.debug.logLevel": "verbose",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
