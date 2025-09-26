@@ -29,6 +29,8 @@ import ghidra.pcode.memstate.MemoryFaultHandler;
 import ghidra.program.database.mem.MemoryBlockDB;
 import ghidra.program.database.mem.MemoryMapDB;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.listing.Instruction;
+import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -62,18 +64,24 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		}
 	}
 
-	protected void assemble(int addr, String ... code) {
+	protected int assemble(int addr, String ... code) {
 		Transaction transaction = program.openTransaction("test");
 		Assembler asm = Assemblers.getAssembler(program);
+		InstructionIterator assembled;
 		try {
-			asm.assemble(address(addr), code);
+			assembled = asm.assemble(address(addr), code);
 		}
 		catch (Exception e) {
 			fail("Assembly failed", e);
 			transaction.abort();
-			return;
+			return 0;
 		}
 		transaction.commit();
+		int len = 0;
+		for (Instruction instr: assembled) {
+			len += instr.getLength();
+		}
+		return len;
 	}
 
 	protected void setAC(int value) {
