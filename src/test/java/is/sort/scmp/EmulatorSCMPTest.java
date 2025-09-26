@@ -250,7 +250,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void DLY() {
-		assertIsNOP(0x8F, 0x10);
+		assertIsNOP("DLY 0x10");
 	}
 
 	@Test
@@ -361,7 +361,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void HALT() {
-		assertIsNOP(0x00);
+		assertIsNOP("HALT");
 	}
 
 	@Test
@@ -418,10 +418,10 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void NOP() {
-		assertIsNOP(0x08);
+		assertIsNOP("NOP");
 	}
 
-	protected void assertIsNOP(int... code) {
+	protected void assertIsNOP(String ... code) {
 		setAC(0x00);
 		setSR(0x00);
 		setE(0x00);
@@ -429,7 +429,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setP2(0x0020);
 		setP3(0x0030);
 
-		write(0x0000, code);
+		int len = assemble(0x0000, code);
 		stepFrom(0x000);
 
 		assertEquals(0x00, getAC());
@@ -438,6 +438,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assertEquals(0x0010, getP1());
 		assertEquals(0x0020, getP2());
 		assertEquals(0x0030, getP3());
-		assertEquals(code.length, getPC());
+		assertEquals(len, getPC());
 	}
 }
