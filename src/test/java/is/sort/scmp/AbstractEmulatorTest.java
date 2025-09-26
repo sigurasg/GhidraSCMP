@@ -23,8 +23,13 @@ import org.junit.jupiter.api.BeforeEach;
 
 import db.Transaction;
 import ghidra.app.emulator.EmulatorHelper;
+import ghidra.app.plugin.assembler.Assembler;
+import ghidra.app.plugin.assembler.Assemblers;
 import ghidra.pcode.memstate.MemoryFaultHandler;
+import ghidra.program.database.mem.MemoryBlockDB;
+import ghidra.program.database.mem.MemoryMapDB;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.mem.MemoryBlock;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -34,7 +39,10 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		super(lang);
 
 		try (Transaction transaction = program.openTransaction("test")) {
-			program.getMemory().createUninitializedBlock("ram", address(0x0000), 0x10000, false);
+			MemoryMapDB mem = program.getMemory();
+			MemoryBlock block = mem.createUninitializedBlock("ram", address(0x0000), 0x10000, false);
+			mem.convertToInitialized(block, (byte) 0x00);
+
 			transaction.commit();
 		}
 		catch (Exception e) {
@@ -52,6 +60,20 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		public boolean unknownAddress(Address address, boolean write) {
 			return false;
 		}
+	}
+
+	protected void assemble(int addr, String ... code) {
+		Transaction transaction = program.openTransaction("test");
+		Assembler asm = Assemblers.getAssembler(program);
+		try {
+			asm.assemble(address(addr), code);
+		}
+		catch (Exception e) {
+			fail("Assembly failed", e);
+			transaction.abort();
+			return;
+		}
+		transaction.commit();
 	}
 
 	protected void setAC(int value) {
