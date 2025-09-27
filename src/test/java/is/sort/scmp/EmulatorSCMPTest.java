@@ -105,28 +105,28 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setSR(0x00);
 		setAC(0x70);
 		stepFrom(0x0100);
-		assertEquals(0x40, getSR());
+		assertEquals(SR.OV, getSR());
 		assertEquals(0x80, getAC());
 
 		// Overflow through carry.
 		setSR(0x80);
 		setAC(0x6F);
 		stepFrom(0x0100);
-		assertEquals(0x40, getSR());
+		assertEquals(SR.OV, getSR());
 		assertEquals(0x80, getAC());
 
 		// Carry out.
 		setSR(0x00);
 		setAC(0xF0);
 		stepFrom(0x0100);
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 		assertEquals(0x00, getAC());
 
 		// Carry in & out.
 		setSR(0x80);
 		setAC(0xEF);
 		stepFrom(0x0100);
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 		assertEquals(0x00, getAC());
 	}
 
@@ -151,7 +151,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setE(0x11);
 		stepFrom(0x0100);
 		assertEquals(0x00, getAC());
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 
 		// TODO(siggi): Moar testing.
 	}
@@ -356,7 +356,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setSR(0x00);
 		stepFrom((0x0100));
 		assertEquals(0x00, getAC());
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 	}
 
 	@Test
@@ -369,7 +369,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assemble(0x0000, "CCL");
 		setSR(0xFF);
 		stepFrom(0x0000);
-		assertEquals(0x7F, getSR());
+		assertEquals(0xFF ^ SR.CYL, getSR());
 	}
 
 	@Test
@@ -377,7 +377,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assemble(0x0000, "SCL");
 		setSR(0x00);
 		stepFrom(0x0000);
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 	}
 
 	@Test
@@ -385,7 +385,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assemble(0x0000, "DINT");
 		setSR(0xFF);
 		stepFrom(0x0000);
-		assertEquals(0xF7, getSR());
+		assertEquals(0xFF ^ SR.IE, getSR());
 	}
 
 	@Test
@@ -393,7 +393,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assemble(0x0000, "IEN");
 		setSR(0x00);
 		stepFrom(0x0000);
-		assertEquals(0x08, getSR());
+		assertEquals(SR.IE, getSR());
 	}
 
 	@Test
