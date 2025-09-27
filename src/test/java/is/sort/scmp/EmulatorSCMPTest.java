@@ -26,15 +26,11 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void AutoIndexedEA() {
 		final int PC = 0x0100;
-
-		// Post-increment:
-		// 	ST @0x10(P1)
-		// 	LD @0x-10(P1)
-		// Pre-decrement:
-		//	ST @-0x10(P1)
-		//	LD @0x10(P1)
-		write(PC, 0xCD, 0x10, 0xC5, 0xF0, 0xCD, 0xF0, 0xC5, 0x10);
-
+		assemble(PC,
+			"ST @0x10(P1)",		// Post-increment
+			"LD @-0x10(P1)",
+			"ST @-0x10(P1)",			// Pre-decrement
+			"LD @0x10(P1)");
 		setAC(0xAA);
 		setP1(0x01000);
 		stepFrom(PC);
@@ -62,11 +58,9 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		// Test that the @E(ptr) addressing mode pre-decrements
 		// or post-increments, depending on the value of E.
 		final int PC = 0x0100;
-
-		// 	ST @E(P1)
-		// 	LD @E(P1)
-		write(PC, 0xCD, 0x80, 0xC5, 0x80);
-
+		assemble(PC,
+			"ST @E(P1)",
+			"LD @E(P1)");
 		setAC(0xAA);
 		setP1(0x01000);
 		setE(0x10);
@@ -84,7 +78,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void LD_PCRel() {
 		final int PC = 0x8100;
-		write(PC, 0xC0, 0x10);  // LD 0x8111
+		assemble(PC, "LD 0x8111");
 		write(0x8111, 0xFF);
 		stepFrom(PC);
 		assertEquals(getAC(), 0xFF);
@@ -92,8 +86,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void ADDI() {
-		write(0x0100, 0xF4, 0x10);  // ADI 0x10
-
+		assemble(0x0100, "ADI 0x10");
 		// Add with no carry.
 		setSR(0x00);
 		setAC(0x00);
@@ -112,28 +105,28 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setSR(0x00);
 		setAC(0x70);
 		stepFrom(0x0100);
-		assertEquals(0x40, getSR());
+		assertEquals(SR.OV, getSR());
 		assertEquals(0x80, getAC());
 
 		// Overflow through carry.
 		setSR(0x80);
 		setAC(0x6F);
 		stepFrom(0x0100);
-		assertEquals(0x40, getSR());
+		assertEquals(SR.OV, getSR());
 		assertEquals(0x80, getAC());
 
 		// Carry out.
 		setSR(0x00);
 		setAC(0xF0);
 		stepFrom(0x0100);
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 		assertEquals(0x00, getAC());
 
 		// Carry in & out.
 		setSR(0x80);
 		setAC(0xEF);
 		stepFrom(0x0100);
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 		assertEquals(0x00, getAC());
 	}
 
@@ -141,8 +134,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	public void CAI() {
 		// Cheat, knowing that the implementation is essentially
 		// just ADI with complement.
-		write(0x0100, 0xFC, ~0x10);  // CAI 0x10
-
+		assemble(0x0100, "CAI 0xEF");
 		// No carry.
 		setSR(0x00);
 		setAC(0x00);
@@ -153,14 +145,13 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void DAE() {
-		write(0x0100, 0x68);
-
+		assemble(0x0100, "DAE");
 		setSR(0x00);
 		setAC(0x89);
 		setE(0x11);
 		stepFrom(0x0100);
 		assertEquals(0x00, getAC());
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 
 		// TODO(siggi): Moar testing.
 	}
@@ -169,9 +160,9 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	public void JMP_PCRel() {
 		final int PC = 0x8100;
 		// PC-relative JMP.
-		// JMP 0x8112
-		// JMP 0x8102
-		write(PC, 0x90, 0x10, 0x90, 0xFE);
+		assemble(PC,
+			"JMP 0x8112",
+			"JMP 0x8102");
 		stepFrom(PC);
 		assertEquals(PC + 0x12, getPC());
 
@@ -183,7 +174,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	public void JMP_P1Rel() {
 		// P1-relative JMP.
 		setP1(0x0200);
-		write(0x0100, 0x91, 0x11);  // JMP 0x10(P1)
+		assemble(0x0100, "JMP 0x11(P1)");
 		stepFrom(0x0100);
 		assertEquals(0x0212, getPC());
 	}
@@ -195,15 +186,14 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setE(0x20);
 		// Note that a displacement of 0x80 does not imply E for
 		// DLD/ILD/JMP instruction forms.
-		write(0x0100, 0x91, 0x80);  // JMP -0x80(P1)
+		assemble(0x0100, "JMP -0x80(P1)");
 		stepFrom(0x0100);
 		assertEquals(0x0181, getPC());
 	}
 
 	@Test
 	public void JP() {
-		write(0x0100, 0x94, 0x10);  // JP 0x0112
-
+		assemble(0x0100, "JP 0x0112");
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
@@ -222,8 +212,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void JZ() {
-		write(0x0100, 0x98, 0x10);  // JZ 0x0112
-
+		assemble(0x0100, "JZ 0x0112");
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
@@ -242,8 +231,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void JNZ() {
-		write(0x0100, 0x9C, 0x10);  // JNZ 0x0112
-
+		assemble(0x0100, "JNZ 0x0112");
 		// Test zero.
 		setAC(0x00);
 		stepFrom(0x0100);
@@ -262,12 +250,12 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void DLY() {
-		assertIsNOP(0x8F, 0x10);
+		assertIsNOP("DLY 0x10");
 	}
 
 	@Test
 	public void XAE() {
-		write(0x0100, 0x01);	// XAE
+		assemble(0x0100, "XAE");
 		setAC(0x01);
 		setE(0x02);
 		stepFrom(0x0100);
@@ -277,8 +265,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void XPAL() {
-		write(0x0100, 0x31);  // XPAL P1.
-
+		assemble(0x0100, "XPAL P1");
 		setAC(0x01);
 		setP1(0x0203);
 		stepFrom(0x0100);
@@ -289,8 +276,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void XPAH() {
-		write(0x0100, 0x35);  // XPAH P1.
-
+		assemble(0x0100, "XPAH P1");
 		setAC(0x01);
 		setP1(0x0203);
 		stepFrom(0x0100);
@@ -301,8 +287,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void XPPC() {
-		write(0x0100, 0x3D);  // XPPC P1.
-
+		assemble(0x0100, "XPPC P1");
 		setP1(0x0203);
 		stepFrom(0x0100);
 
@@ -313,8 +298,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void SIO() {
-		write(0x0100, 0x19);  // SIO.
-
+		assemble(0x0100, "SIO");
 		setSERIAL(0x00);
 		setE(0xAA);
 		stepFrom((0x0100));
@@ -331,8 +315,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void SR() {
-		write(0x0100, 0x1C);  // SR.
-
+		assemble(0x0100, "SR");
 		setAC(0xAA);
 		setSR(0xFF);
 		stepFrom((0x0100));
@@ -342,8 +325,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void SRL() {
-		write(0x0100, 0x1D);  // SRL.
-
+		assemble(0x0100, "SRL");
 		setAC(0xAA);
 		setSR(0xFF);
 		stepFrom((0x0100));
@@ -353,8 +335,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void RR() {
-		write(0x0100, 0x1E);  // RR.
-
+		assemble(0x0100, "RR");
 		setAC(0x41);
 		setSR(0xFF);
 		stepFrom((0x0100));
@@ -364,8 +345,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void RRL() {
-		write(0x0100, 0x1F);  // RRL.
-
+		assemble(0x0100, "RRL");
 		setAC(0x01);
 		setSR(0xFF);
 		stepFrom((0x0100));
@@ -376,50 +356,49 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setSR(0x00);
 		stepFrom((0x0100));
 		assertEquals(0x00, getAC());
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 	}
 
 	@Test
 	public void HALT() {
-		assertIsNOP(0x00);
-
+		assertIsNOP("HALT");
 	}
 
 	@Test
 	public void CCL() {
-		write(0x0000, 0x02);	// CCL
+		assemble(0x0000, "CCL");
 		setSR(0xFF);
 		stepFrom(0x0000);
-		assertEquals(0x7F, getSR());
+		assertEquals(0xFF ^ SR.CYL, getSR());
 	}
 
 	@Test
 	public void SCL() {
-		write(0x0000, 0x03);	// SCL
+		assemble(0x0000, "SCL");
 		setSR(0x00);
 		stepFrom(0x0000);
-		assertEquals(0x80, getSR());
+		assertEquals(SR.CYL, getSR());
 	}
 
 	@Test
 	public void DINT() {
-		write(0x0000, 0x04);	// DINT
+		assemble(0x0000, "DINT");
 		setSR(0xFF);
 		stepFrom(0x0000);
-		assertEquals(0xF7, getSR());
+		assertEquals(0xFF ^ SR.IE, getSR());
 	}
 
 	@Test
 	public void IEN() {
-		write(0x0000, 0x05);	// IEN
+		assemble(0x0000, "IEN");
 		setSR(0x00);
 		stepFrom(0x0000);
-		assertEquals(0x08, getSR());
+		assertEquals(SR.IE, getSR());
 	}
 
 	@Test
 	public void CSA() {
-		write(0x0000, 0x06);	// CSA
+		assemble(0x0000, "CSA");
 		setSR(0xAA);
 		setAC(0x00);
 		stepFrom(0x0000);
@@ -429,7 +408,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void CAS() {
-		write(0x0000, 0x07);	// CAS
+		assemble(0x0000, "CAS");
 		setAC(0xAA);
 		setSR(0x00);
 		stepFrom(0x0000);
@@ -439,10 +418,10 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 	@Test
 	public void NOP() {
-		assertIsNOP(0x08);
+		assertIsNOP("NOP");
 	}
 
-	protected void assertIsNOP(int... code) {
+	protected void assertIsNOP(String ... code) {
 		setAC(0x00);
 		setSR(0x00);
 		setE(0x00);
@@ -450,7 +429,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		setP2(0x0020);
 		setP3(0x0030);
 
-		write(0x0000, code);
+		int len = assemble(0x0000, code);
 		stepFrom(0x000);
 
 		assertEquals(0x00, getAC());
@@ -459,6 +438,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assertEquals(0x0010, getP1());
 		assertEquals(0x0020, getP2());
 		assertEquals(0x0030, getP3());
-		assertEquals(code.length, getPC());
+		assertEquals(len, getPC());
 	}
 }
