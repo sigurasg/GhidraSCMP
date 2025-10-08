@@ -266,23 +266,49 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 	@Test
 	public void XPAL() {
 		assemble(0x0100, "XPAL P1");
+		// Test the PC case.
+		assemble(0x0F20,
+			"LDI 0x10",
+			"XPAL PC");
+		// Test the carry/overflow case.
+		assemble(0x0F40,
+			"LDI 0xFF",
+			"XPAL PC");
 		setAC(0x01);
 		setP1(0x0203);
 		stepFrom(0x0100);
 
 		assertEquals(0x03, getAC());
 		assertEquals(0x0201, getP1());
+
+		stepFrom(0x0F20, 2);
+		assertEquals(0x22, getAC());
+		assertEquals(0x0F11, getPC());
+
+		stepFrom(0x0F40, 2);
+		assertEquals(0x42, getAC());
+		assertEquals(0x0000, getPC());
 	}
 
 	@Test
 	public void XPAH() {
 		assemble(0x0100, "XPAH P1");
+
+		// Test the PC case.
+		assemble(0x0f20,
+			"LDI 0x10",
+			"XPAH PC");
+
 		setAC(0x01);
 		setP1(0x0203);
 		stepFrom(0x0100);
 
 		assertEquals(0x02, getAC());
 		assertEquals(0x0103, getP1());
+
+		stepFrom(0x0F20, 2);
+		assertEquals(0x0F, getAC());
+		assertEquals(0x1023, getPC());
 	}
 
 	@Test
@@ -421,7 +447,7 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 		assertIsNOP("NOP");
 	}
 
-	protected void assertIsNOP(String ... code) {
+	protected void assertIsNOP(String... code) {
 		setAC(0x00);
 		setSR(0x00);
 		setE(0x00);

@@ -363,18 +363,34 @@ PTRJmp: disp8(op_ptr) is op_ptr; disp8 {
   additionWithCarry(~E);
 }
 
-# TODO(siggi): Special case for PC!
 :XPAL op_ptr is op2_7 = 0x0C & op_ptr {
   local tmp:1 = op_ptr[0,8];
   op_ptr[0,8] = AC;
   AC = tmp;
 }
 
-# TODO(siggi): Special case for PC!
+:XPAL PC is op2_7 = 0x0C & op_ptr = 0 & PC {
+  local pc:2 = inst_start;
+  local tmp:1 = pc[0,8];
+  pc[0,8] = AC;
+  AC = tmp;
+  pc = addDispl(pc, 1:2);
+  goto [pc];
+}
+
 :XPAH op_ptr is op2_7 = 0x0D & op_ptr {
   local tmp:1 = op_ptr[8,8];
   op_ptr[8,8] = AC;
   AC = tmp;
+}
+
+:XPAH PC is op2_7 = 0x0D & op_ptr = 0 & PC {
+  local pc:2 = inst_start;
+  local tmp:1 = pc[8,8];
+  pc[8,8] = AC;
+  AC = tmp;
+  pc = addDispl(pc, 1:2);
+  goto [pc];
 }
 
 :XPPC op_ptr is op2_7 = 0x0F & op_ptr {
