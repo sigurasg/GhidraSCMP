@@ -166,19 +166,31 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		return read(addr, 1)[0] & 0xFF;
 	}
 
-	protected void stepFrom(int addr) {
+	protected void stepFrom(int addr, int numInstr) {
 		setPC(addr);
-		step();
+		step(numInstr);
 	}
 
-	protected void step() {
+	protected void stepFrom(int addr) {
+		stepFrom(addr, 1);
+	}
+
+	protected void step(int numInstr) {
 		try {
-			if (!emulator.step(TaskMonitor.DUMMY))
-				fail("Step failed: " + emulator.getLastError());
+			for (int i = 0; i < numInstr; ++i) {
+				if (!emulator.step(TaskMonitor.DUMMY)) {
+					fail("Step failed: " + emulator.getLastError());
+					return;
+				}
+			}
 		}
 		catch (CancelledException e) {
 			fail("Failed to step.", e);
 		}
+	}
+
+	protected void step() {
+		step(1);
 	}
 
 	private final class AddDisplBreakCallback extends BreakCallBack {
