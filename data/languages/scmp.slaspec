@@ -163,7 +163,7 @@ EA: loc is op_m = 0 & op_ptr = 0; imm8 != 0x80 & disp8 & imm8
 # Pointer-relative.
 EA: disp8(op_ptr) is op_m = 0 & op_ptr; imm8 != 0x80 & disp8 {
   local tmp:2 = sext(disp8:1);
-  local ret:2 = addDispl(op_ptr:2, tmp);
+  local ret:2 = addDispl(op_ptr, tmp);
   export ret;
 }
 
@@ -179,7 +179,8 @@ EA: @disp8(op_ptr) is op_m = 1 & op_ptr &
 
 # Special cases for E-relative.
 EA: E(op_ptr) is op_m = 0 & op_ptr & E; imm8 = 0x80 {
-  local ret:2 = addDispl(op_ptr, E);
+  local tmp:2 = sext(E);
+  local ret:2 = addDispl(op_ptr, tmp);
   export ret;
 }
 
@@ -197,7 +198,8 @@ PTR: loc is op_ptr = 0; disp8
 }
 
 PTR: disp8(op_ptr) is op_ptr; disp8 {
-  local ret:2 = addDispl(op_ptr, disp8:1);
+  local tmp:2 = sext(disp8:1);
+  local ret:2 = addDispl(op_ptr, tmp);
   export ret;
 }
 

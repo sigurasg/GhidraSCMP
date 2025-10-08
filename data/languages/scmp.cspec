@@ -18,6 +18,9 @@
         </pentry>
       </input>
       <output>
+        <pentry minsize="1" maxsize="1">
+          <register name="AC"/>
+        </pentry>
         <pentry minsize="2" maxsize="2">
           <register name="P3"/>
         </pentry>
@@ -25,9 +28,6 @@
       <returnaddress>
         <register name="P3"/>
       </returnaddress>
-      <unaffected>
-        <register name="P2"/>
-      </unaffected>
     </prototype>
   </default_proto>
 </compiler_spec>
