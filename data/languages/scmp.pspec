@@ -4,6 +4,17 @@
 
 <processor_spec>
   <programcounter register="PC"/>
+
+ <segmentop space="ram" userop="addDispl">
+    <pcode>
+      <input name="ptr" size="2"/>
+      <input name="displ" size="2"/>
+      <output name="res" size="2"/>
+      <body><![CDATA[
+        res = (ptr & 0xF000) | ((ptr + displ) & 0x0FFF);
+      ]]></body>
+    </pcode>
+  </segmentop>
   <register_data>
     <register name="AC"/>
     <register name="SR"/>

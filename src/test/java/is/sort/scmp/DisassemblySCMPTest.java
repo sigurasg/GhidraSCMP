@@ -19,15 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.beans.Transient;
 import java.io.ByteArrayOutputStream;
-
-import javax.management.relation.RoleResult;
 
 import org.junit.jupiter.api.Test;
 
 import ghidra.program.model.listing.CodeUnit;
-import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Instruction;
 
 public class DisassemblySCMPTest extends AbstractIntegrationTest {
