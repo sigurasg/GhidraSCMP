@@ -92,7 +92,7 @@ public abstract class AbstractIntegrationTest extends AbstractGenericTest {
 		public Map<String, GModule> findGhidraModules() throws IOException {
 			var ret = new HashMap<String, GModule>(super.findGhidraModules());
 
-			ret.put("6800", new GModule(applicationRootDirs, new ResourceFile("./build")));
+			ret.put("SCMP", new GModule(applicationRootDirs, new ResourceFile("./build")));
 			return ret;
 		}
 	}

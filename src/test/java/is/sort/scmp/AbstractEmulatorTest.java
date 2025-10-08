@@ -25,8 +25,10 @@ import db.Transaction;
 import ghidra.app.emulator.EmulatorHelper;
 import ghidra.app.plugin.assembler.Assembler;
 import ghidra.app.plugin.assembler.Assemblers;
+import ghidra.pcode.emulate.BreakCallBack;
 import ghidra.pcode.memstate.MemoryFaultHandler;
-import ghidra.program.database.mem.MemoryBlockDB;
+import ghidra.pcode.memstate.MemoryState;
+import ghidra.pcode.pcoderaw.PcodeOpRaw;
 import ghidra.program.database.mem.MemoryMapDB;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Instruction;
@@ -35,18 +37,14 @@ import ghidra.program.model.mem.MemoryBlock;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
-
-// TODO(siggi): The emulator doesn't heed pcodeops, so the workaround
-//    is to inject the pcodeop in Java.
-//    See: https://github.com/NationalSecurityAgency/ghidra/issues/6151
 public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
-
 	public AbstractEmulatorTest(String lang) {
 		super(lang);
 
 		try (Transaction transaction = program.openTransaction("test")) {
 			MemoryMapDB mem = program.getMemory();
-			MemoryBlock block = mem.createUninitializedBlock("ram", address(0x0000), 0x10000, false);
+			MemoryBlock block =
+				mem.createUninitializedBlock("ram", address(0x0000), 0x10000, false);
 			mem.convertToInitialized(block, (byte) 0x00);
 
 			transaction.commit();
@@ -68,7 +66,7 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		}
 	}
 
-	protected int assemble(int addr, String ... code) {
+	protected int assemble(int addr, String... code) {
 		Transaction transaction = program.openTransaction("test");
 		Assembler asm = Assemblers.getAssembler(program);
 		InstructionIterator assembled;
@@ -82,7 +80,7 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		}
 		transaction.commit();
 		int len = 0;
-		for (Instruction instr: assembled) {
+		for (Instruction instr : assembled) {
 			len += instr.getLength();
 		}
 		return len;
@@ -183,10 +181,26 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		}
 	}
 
+	private final class AddDisplBreakCallback extends BreakCallBack {
+		@Override
+		public boolean pcodeCallback(PcodeOpRaw op) {
+			// Implements the addDispl segmentop for emulation.
+			// For whatever reason the emulator doesn't heed
+			// segmentop definitions from the pspec.
+			MemoryState mem = emulate.getMemoryState();
+			long ptr = mem.getValue(op.getInput(1));
+			long displ = mem.getValue(op.getInput(2));
+
+			mem.setValue(op.getOutput(), (ptr & 0xF000) | ((ptr + displ) & 0x0FFF));
+			return true;
+		}
+	}
+
 	@BeforeEach
 	public void beforeEach() {
 		emulator = new EmulatorHelper(program);
 		emulator.setMemoryFaultHandler(new FailOnMemoryFault());
+		emulator.registerCallOtherCallback("addDispl", new AddDisplBreakCallback());
 	}
 
 	@AfterEach
