@@ -153,7 +153,7 @@ macro decimalAddition(op) {
 }
 
 # PC-relative.
-EA: loc is op_m = 0 & op_ptr = 0; imm8 != 0x80 & disp8 & imm8
+EA: loc is op_m = 0 & op_ptr = 0; imm8 != 0x80 & disp8
     [ loc = (inst_start & 0xF000) | ((inst_start + 1 + disp8) & 0x0FFF); ] {
   local ret:2;
   dispPc(ret, disp8:1);
