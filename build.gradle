@@ -64,10 +64,7 @@ dependencies {
 task compileSleigh(type: JavaExec) {
     description = 'Run sleigh on the SC/MP languages specs.'
 
-    // TODO(siggi): This wants to be a pattern replacement of some kind?
-    FileCollection slaFiles = files(
-        'data/languages/scmp.sla',
-        'data/languages/scmp2.sla')
+    FileCollection slaFiles = files('data/languages/scmp.sla')
 
     inputs.files(fileTree('data/languages').include('*.slaspec', '*.sinc'))
         .withPropertyName('sourceFiles')
@@ -92,6 +89,7 @@ task copySleighSources(type: Sync) {
 
 // TODO(siggi): This needs to depend on the slaspec somehow.
 tasks.named('test') {
+    inputs.file('build/data/languages/scmp.sla')
     useJUnitPlatform()
 
     dependsOn(copySleighSources)
