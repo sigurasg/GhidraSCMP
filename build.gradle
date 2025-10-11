@@ -61,38 +61,57 @@ dependencies {
     testRuntimeOnly('org.junit.vintage:junit-vintage-engine')
 }
 
+task copySleighSources(type: Sync) {
+    from 'data'
+    into 'build/data'
+
+    preserve {
+        include '*.sla'
+    }
+}
+
 task compileSleigh(type: JavaExec) {
     description = 'Run sleigh on the SC/MP languages specs.'
 
-    FileCollection slaFiles = files('data/languages/scmp.sla')
+    String buildDir = 'build/data/languages'
+    String inputDir = 'data/languages'
 
-    inputs.files(fileTree('data/languages').include('*.slaspec', '*.sinc'))
+    // Get the input files.
+    FileTree inputFiles = fileTree(inputDir).include('*.slaspec', '*.sinc')
+    ArrayList<File> outputFiles = new ArrayList<File>()
+    // Build the list of output .sla files.
+    inputFiles.forEach(file -> {
+         if (file.getPath().endsWith(".slaspec")) {
+            String slaPath = file.getPath().replace(".slaspec", ".sla")
+            slaPath = slaPath.replace(inputDir, buildDir)
+            outputFiles.add(new File(slaPath))
+         }
+        })
+
+    inputs.files(inputFiles)
         .withPropertyName('sourceFiles')
         .withPathSensitivity(PathSensitivity.RELATIVE)
-    outputs.files(slaFiles)
-        .withPropertyName('outputFile')
+    outputs.files(outputFiles)
+        .withPropertyName('outputFiles')
 
     mainClass.set('ghidra.pcodeCPort.slgh_compile.SleighCompile')
     classpath =
         fileTree("$ghidraInstallDir/Ghidra/Framework") { include('**/*.jar') } +
         fileTree("$ghidraInstallDir/Ghidra/Features") { include('**/*.jar') }
 
-    args = ['-u', '-l', '-n', '-t', '-e', '-c', '-f', '-o', '-s', '-a', 'data/languages']
+    args = ['-u', '-l', '-n', '-t', '-e', '-c', '-f', '-o', '-s', '-a', buildDir]
+
+    dependsOn(copySleighSources)
 }
 
-task copySleighSources(type: Sync) {
-    from 'data'
-    into 'build/data'
-
-    dependsOn(compileSleigh)
-}
-
-// TODO(siggi): This needs to depend on the slaspec somehow.
 tasks.named('test') {
     inputs.file('build/data/languages/scmp.sla')
     useJUnitPlatform()
 
-    dependsOn(copySleighSources)
+    // The tests are dependent on the compiled language files.
+    inputs.files(fileTree('build/data/languages').include('*.sla'))
+
+    dependsOn(compileSleigh)
 }
 
 // Exclude additional files from the built extension
