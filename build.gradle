@@ -127,6 +127,7 @@ buildExtension {
     exclude '.github/**'
     exclude 'gradle/**'
     exclude 'eclipse/**'
+    exclude 'README.md'
 
     dependsOn(compileSleigh)
     dependsOn(copySleighSources)
