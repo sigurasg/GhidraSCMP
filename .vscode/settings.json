@@ -14,6 +14,5 @@
     "sources": {
     }
   },
-  "java.debug.logLevel": "verbose",
-  "java.configuration.updateBuildConfiguration": "interactive"
+  "java.debug.logLevel": "verbose"
 }
