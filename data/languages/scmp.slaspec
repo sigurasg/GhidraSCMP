@@ -374,8 +374,8 @@ PTRJmp: disp8(op_ptr) is op_ptr; disp8 {
   local tmp:1 = pc[0,8];
 
   # This results in bad PCode somehow.
-  # pc[0,8] = AC;
-  pc = (pc & 0xFF00) | zext(AC);
+  pc[0,8] = AC;
+  # pc = (pc & 0xFF00) | zext(AC);
 
   AC = tmp;
   pc = addDispl(pc, 1:2);

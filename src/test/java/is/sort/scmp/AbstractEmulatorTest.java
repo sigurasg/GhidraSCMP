@@ -34,6 +34,7 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.model.pcode.PcodeOp;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -179,7 +180,18 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		try {
 			for (int i = 0; i < numInstr; ++i) {
 				if (!emulator.step(TaskMonitor.DUMMY)) {
-					fail("Step failed: " + emulator.getLastError());
+					// Record the instruction and Pcode that failed to step.
+					Instruction instr =
+						program.getListing().getInstructionAt(emulator.getExecutionAddress());
+					StringBuilder sb = new StringBuilder();
+					sb.append("Step failed: " + emulator.getLastError() + "\n")
+							.append(" at address: " + instr.getAddressString(false, true) + "\n")
+							.append(" Instruction: " + instr.toString() + "\n")
+							.append(" PCode:\n");
+					for (PcodeOp op : instr.getPcode()) {
+						sb.append("   " + op.toString() + "\n");
+					}
+					fail(sb.toString());
 					return;
 				}
 			}
