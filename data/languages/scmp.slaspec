@@ -369,10 +369,14 @@ PTRJmp: disp8(op_ptr) is op_ptr; disp8 {
   AC = tmp;
 }
 
-:XPAL PC is op2_7 = 0x0C & op_ptr = 0 & PC {
+:XPAL "PC" is op2_7 = 0x0C & op_ptr = 0 {
   local pc:2 = inst_start;
   local tmp:1 = pc[0,8];
-  pc[0,8] = AC;
+
+  # This results in bad PCode somehow.
+  # pc[0,8] = AC;
+  pc = (pc & 0xFF00) | zext(AC);
+
   AC = tmp;
   pc = addDispl(pc, 1:2);
   goto [pc];
@@ -384,7 +388,7 @@ PTRJmp: disp8(op_ptr) is op_ptr; disp8 {
   AC = tmp;
 }
 
-:XPAH PC is op2_7 = 0x0D & op_ptr = 0 & PC {
+:XPAH "PC" is op2_7 = 0x0D & op_ptr = 0 {
   local pc:2 = inst_start;
   local tmp:1 = pc[8,8];
   pc[8,8] = AC;
