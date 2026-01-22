@@ -17,6 +17,7 @@ package is.sort.scmp;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
+
 import ghidra.app.plugin.assembler.Assembler;
 import ghidra.app.plugin.assembler.Assemblers;
 import ghidra.app.plugin.assembler.AssemblyBuffer;
@@ -43,6 +44,15 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 			}
 		};
 		thread = emulator.newThread();
+
+		AC = language.getRegister("AC");
+		SR = language.getRegister("SR");
+		E = language.getRegister("E");
+		SERIAL = language.getRegister("SERIAL");
+		PC = language.getRegister("PC");
+		P1 = language.getRegister("P1");
+		P2 = language.getRegister("P2");
+		P3 = language.getRegister("P3");
 	}
 
 	protected int assemble(int addr, String... code) {
@@ -67,68 +77,68 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 	}
 
 	protected void setAC(int value) {
-		writeRegister("AC", value);
+		writeRegister(AC, value);
 	}
 
 	protected void setSR(int value) {
-		writeRegister("SR", value);
+		writeRegister(SR, value);
 	}
 
 	protected void setE(int value) {
-		writeRegister("E", value);
+		writeRegister(E, value);
 	}
 
 	protected void setSERIAL(int value) {
-		writeRegister("SERIAL", value);
+		writeRegister(SERIAL, value);
 	}
 
 	protected void setPC(int value) {
-		writeRegister("PC", value);
+		writeRegister(PC, value);
 		thread.setCounter(address(value));
 	}
 
 	protected void setP1(int value) {
-		writeRegister("P1", value);
+		writeRegister(P1, value);
 	}
 
 	protected void setP2(int value) {
-		writeRegister("P2", value);
+		writeRegister(P2, value);
 	}
 
 	protected void setP3(int value) {
-		writeRegister("P3", value);
+		writeRegister(P3, value);
 	}
 
 	protected int getAC() {
-		return readRegister("AC");
+		return readRegister(AC);
 	}
 
 	protected int getSR() {
-		return readRegister("SR");
+		return readRegister(SR);
 	}
 
 	protected int getE() {
-		return readRegister("E");
+		return readRegister(E);
 	}
 
 	protected int getSERIAL() {
-		return readRegister("SERIAL");
+		return readRegister(SERIAL);
 	}
 
 	protected int getPC() {
-		return readRegister("PC");
+		return readRegister(PC);
 	}
 
 	protected int getP1() {
-		return readRegister("P1");
+		return readRegister(P1);
 	}
 
 	protected int getP2() {
-		return readRegister("P2");
+		return readRegister(P2);
 	}
 
 	protected int getP3() {
-		return readRegister("P3");
+		return readRegister(P3);
 	}
 
 	protected void write(int addr, int... bytes) {
@@ -179,22 +189,19 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		return emulator.getSharedState().getVar(dyn, addr, length, true, Reason.INSPECT);
 	}
 
-	private void writeRegister(String name, int value) {
-		Register reg = language.getRegister(name);
+	private void writeRegister(Register reg, int value) {
 		thread.getState()
-				.setVar(language.getRegister(name), Utils.longToBytes(value,
+				.setVar(reg, Utils.longToBytes(value,
 					reg.getNumBytes(), language.isBigEndian()));
 	}
 
-	private int readRegister(String name) {
-		Register reg = language.getRegister(name);
-
+	private int readRegister(Register reg) {
 		return (int) Utils.bytesToLong(thread.getState().getVar(reg, Reason.INSPECT),
 			reg.getNumBytes(), language.isBigEndian());
 
 	}
 
-	public class LocalPcodeUseropLibrary extends AnnotatedPcodeUseropLibrary<byte[]> {
+	protected class LocalPcodeUseropLibrary extends AnnotatedPcodeUseropLibrary<byte[]> {
 		private final SleighLanguage language;
 
 		private LocalPcodeUseropLibrary(SleighLanguage language) {
@@ -213,4 +220,13 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 
 	private PcodeEmulator emulator = null;
 	private PcodeThread<byte[]> thread = null;
+
+	private Register AC = null;
+	private Register SR = null;
+	private Register E = null;
+	private Register SERIAL = null;
+	private Register PC = null;
+	private Register P1 = null;
+	private Register P2 = null;
+	private Register P3 = null;
 }
