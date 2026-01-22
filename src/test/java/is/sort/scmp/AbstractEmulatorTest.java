@@ -45,14 +45,14 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		};
 		thread = emulator.newThread();
 
-		AC = language.getRegister("AC");
-		SR = language.getRegister("SR");
-		E = language.getRegister("E");
-		SERIAL = language.getRegister("SERIAL");
-		PC = language.getRegister("PC");
-		P1 = language.getRegister("P1");
-		P2 = language.getRegister("P2");
-		P3 = language.getRegister("P3");
+		regAC = language.getRegister("AC");
+		regSR = language.getRegister("SR");
+		regE = language.getRegister("E");
+		regSERIAL = language.getRegister("SERIAL");
+		regPC = language.getRegister("PC");
+		regP1 = language.getRegister("P1");
+		regP2 = language.getRegister("P2");
+		regP3 = language.getRegister("P3");
 	}
 
 	protected int assemble(int addr, String... code) {
@@ -77,68 +77,68 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 	}
 
 	protected void setAC(int value) {
-		writeRegister(AC, value);
+		writeRegister(regAC, value);
 	}
 
 	protected void setSR(int value) {
-		writeRegister(SR, value);
+		writeRegister(regSR, value);
 	}
 
 	protected void setE(int value) {
-		writeRegister(E, value);
+		writeRegister(regE, value);
 	}
 
 	protected void setSERIAL(int value) {
-		writeRegister(SERIAL, value);
+		writeRegister(regSERIAL, value);
 	}
 
 	protected void setPC(int value) {
-		writeRegister(PC, value);
+		writeRegister(regPC, value);
 		thread.setCounter(address(value));
 	}
 
 	protected void setP1(int value) {
-		writeRegister(P1, value);
+		writeRegister(regP1, value);
 	}
 
 	protected void setP2(int value) {
-		writeRegister(P2, value);
+		writeRegister(regP2, value);
 	}
 
 	protected void setP3(int value) {
-		writeRegister(P3, value);
+		writeRegister(regP3, value);
 	}
 
 	protected int getAC() {
-		return readRegister(AC);
+		return readRegister(regAC);
 	}
 
 	protected int getSR() {
-		return readRegister(SR);
+		return readRegister(regSR);
 	}
 
 	protected int getE() {
-		return readRegister(E);
+		return readRegister(regE);
 	}
 
 	protected int getSERIAL() {
-		return readRegister(SERIAL);
+		return readRegister(regSERIAL);
 	}
 
 	protected int getPC() {
-		return readRegister(PC);
+		return readRegister(regPC);
 	}
 
 	protected int getP1() {
-		return readRegister(P1);
+		return readRegister(regP1);
 	}
 
 	protected int getP2() {
-		return readRegister(P2);
+		return readRegister(regP2);
 	}
 
 	protected int getP3() {
-		return readRegister(P3);
+		return readRegister(regP3);
 	}
 
 	protected void write(int addr, int... bytes) {
@@ -221,12 +221,12 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 	private PcodeEmulator emulator = null;
 	private PcodeThread<byte[]> thread = null;
 
-	private Register AC = null;
-	private Register SR = null;
-	private Register E = null;
-	private Register SERIAL = null;
-	private Register PC = null;
-	private Register P1 = null;
-	private Register P2 = null;
-	private Register P3 = null;
+	private Register regAC = null;
+	private Register regSR = null;
+	private Register regE = null;
+	private Register regSERIAL = null;
+	private Register regPC = null;
+	private Register regP1 = null;
+	private Register regP2 = null;
+	private Register regP3 = null;
 }
