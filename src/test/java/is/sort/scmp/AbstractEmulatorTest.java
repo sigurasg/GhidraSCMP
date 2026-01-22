@@ -17,8 +17,6 @@ package is.sort.scmp;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
-
 import ghidra.app.plugin.assembler.Assembler;
 import ghidra.app.plugin.assembler.Assemblers;
 import ghidra.app.plugin.assembler.AssemblyBuffer;
@@ -41,7 +39,7 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		emulator = new PcodeEmulator(language) {
 			@Override
 			protected PcodeUseropLibrary<byte[]> createUseropLibrary() {
-				return new LocalPcodeUseropLibrary(language, AbstractEmulatorTest.this);
+				return new LocalPcodeUseropLibrary(language);
 			}
 		};
 		thread = emulator.newThread();
@@ -197,16 +195,10 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 	}
 
 	public class LocalPcodeUseropLibrary extends AnnotatedPcodeUseropLibrary<byte[]> {
-		private final static Charset UTF8 = Charset.forName("utf8");
-
 		private final SleighLanguage language;
-		private final AbstractEmulatorTest test;
-		private final AddressSpace space;
 
-		private LocalPcodeUseropLibrary(SleighLanguage language, AbstractEmulatorTest test) {
+		private LocalPcodeUseropLibrary(SleighLanguage language) {
 			this.language = language;
-			this.test = test;
-			this.space = language.getDefaultSpace();
 		}
 
 		@PcodeUserop
