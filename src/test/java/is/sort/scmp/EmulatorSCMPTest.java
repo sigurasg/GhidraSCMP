@@ -48,7 +48,6 @@ public class EmulatorSCMPTest extends AbstractEmulatorTest {
 
 		setAC(0x00);
 		step();
-		step();
 		assertEquals(0x01000, getP1());
 		assertEquals(0xAA, getAC());
 	}

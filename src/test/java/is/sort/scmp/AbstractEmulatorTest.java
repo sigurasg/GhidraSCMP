@@ -17,6 +17,7 @@ package is.sort.scmp;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,14 +25,14 @@ import org.junit.jupiter.api.BeforeEach;
 import ghidra.app.plugin.assembler.Assembler;
 import ghidra.app.plugin.assembler.Assemblers;
 import ghidra.app.plugin.assembler.AssemblyBuffer;
+import ghidra.app.plugin.processors.sleigh.SleighLanguage;
 import ghidra.pcode.emu.PcodeEmulator;
 import ghidra.pcode.emu.PcodeThread;
-import ghidra.pcode.emulate.BreakCallBack;
-import ghidra.pcode.utils.Utils;
+import ghidra.pcode.exec.AnnotatedPcodeUseropLibrary;
+import ghidra.pcode.exec.PcodeExecutor;
 import ghidra.pcode.exec.PcodeExecutorStatePiece.Reason;
-import ghidra.pcode.memstate.MemoryFaultHandler;
-import ghidra.pcode.memstate.MemoryState;
-import ghidra.pcode.pcoderaw.PcodeOpRaw;
+import ghidra.pcode.exec.PcodeUseropLibrary;
+import ghidra.pcode.utils.Utils;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.lang.Register;
@@ -40,20 +41,13 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 	public AbstractEmulatorTest(String lang) {
 		super(lang);
 
-		emulator = new PcodeEmulator(language);
+		emulator = new PcodeEmulator(language) {
+			@Override
+			protected PcodeUseropLibrary<byte[]> createUseropLibrary() {
+				return new LocalPcodeUseropLibrary(language, AbstractEmulatorTest.this);
+			}
+		};
 		thread = emulator.newThread();
-	}
-
-	class FailOnMemoryFault implements MemoryFaultHandler {
-		@Override
-		public boolean uninitializedRead(Address address, int size, byte[] buf, int bufOffset) {
-			return false;
-		}
-
-		@Override
-		public boolean unknownAddress(Address address, boolean write) {
-			return false;
-		}
 	}
 
 	protected int assemble(int addr, String... code) {
@@ -95,6 +89,7 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 
 	protected void setPC(int value) {
 		writeRegister("PC", value);
+		thread.setCounter(address(value));
 	}
 
 	protected void setP1(int value) {
@@ -176,21 +171,6 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		step(1);
 	}
 
-	private final class AddDisplBreakCallback extends BreakCallBack {
-		@Override
-		public boolean pcodeCallback(PcodeOpRaw op) {
-			// Implements the addDispl segmentop for emulation.
-			// For whatever reason the emulator doesn't heed
-			// segmentop definitions from the pspec.
-			MemoryState mem = emulate.getMemoryState();
-			long ptr = mem.getValue(op.getInput(1));
-			long displ = mem.getValue(op.getInput(2));
-
-			mem.setValue(op.getOutput(), (ptr & 0xF000) | ((ptr + displ) & 0x0FFF));
-			return true;
-		}
-	}
-
 	void writeMemory(int addr, byte[] data) {
 		AddressSpace dyn = language.getDefaultSpace();
 		Address entry = dyn.getAddress(addr);
@@ -214,10 +194,32 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 	private int readRegister(String name) {
 		Register reg = language.getRegister(name);
 
-		return (int)Utils.bytesToLong(thread.getState().getVar(reg, Reason.INSPECT),
-				reg.getNumBytes(), language.isBigEndian());
+		return (int) Utils.bytesToLong(thread.getState().getVar(reg, Reason.INSPECT),
+			reg.getNumBytes(), language.isBigEndian());
 
 	}
+
+	public class LocalPcodeUseropLibrary extends AnnotatedPcodeUseropLibrary<byte[]> {
+		private final static Charset UTF8 = Charset.forName("utf8");
+
+		private final SleighLanguage language;
+		private final AbstractEmulatorTest test;
+		private final AddressSpace space;
+
+		private LocalPcodeUseropLibrary(SleighLanguage language, AbstractEmulatorTest test) {
+			this.language = language;
+			this.test = test;
+			this.space = language.getDefaultSpace();
+		}
+
+		@PcodeUserop
+		public byte[] addDispl(@OpExecutor PcodeExecutor<byte[]> executor, byte[] reg, byte[] displ) {
+			long regValue = Utils.bytesToLong(reg, reg.length, language.isBigEndian());
+			long displValue = Utils.bytesToLong(displ, displ.length, language.isBigEndian());
+			long ret = (regValue & 0xF000) | ((regValue + displValue) & 0x0FFF);
+			return Utils.longToBytes(ret, 2, language.isBigEndian());
+		}
+	};
 
 	@BeforeEach
 	public void beforeEach() {
