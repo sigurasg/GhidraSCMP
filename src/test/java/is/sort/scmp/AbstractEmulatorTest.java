@@ -19,9 +19,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-
 import ghidra.app.plugin.assembler.Assembler;
 import ghidra.app.plugin.assembler.Assemblers;
 import ghidra.app.plugin.assembler.AssemblyBuffer;
@@ -171,14 +168,14 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		step(1);
 	}
 
-	void writeMemory(int addr, byte[] data) {
+	private void writeMemory(int addr, byte[] data) {
 		AddressSpace dyn = language.getDefaultSpace();
 		Address entry = dyn.getAddress(addr);
 
 		emulator.getSharedState().setVar(dyn, entry.getOffset(), data.length, true, data);
 	}
 
-	byte[] readMemory(int addr, int length) {
+	private byte[] readMemory(int addr, int length) {
 		AddressSpace dyn = language.getDefaultSpace();
 
 		return emulator.getSharedState().getVar(dyn, addr, length, true, Reason.INSPECT);
@@ -213,21 +210,14 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		}
 
 		@PcodeUserop
-		public byte[] addDispl(@OpExecutor PcodeExecutor<byte[]> executor, byte[] reg, byte[] displ) {
+		public byte[] addDispl(@OpExecutor PcodeExecutor<byte[]> executor, byte[] reg,
+				byte[] displ) {
 			long regValue = Utils.bytesToLong(reg, reg.length, language.isBigEndian());
 			long displValue = Utils.bytesToLong(displ, displ.length, language.isBigEndian());
 			long ret = (regValue & 0xF000) | ((regValue + displValue) & 0x0FFF);
 			return Utils.longToBytes(ret, 2, language.isBigEndian());
 		}
 	};
-
-	@BeforeEach
-	public void beforeEach() {
-	}
-
-	@AfterEach
-	public void afterEach() {
-	}
 
 	private PcodeEmulator emulator = null;
 	private PcodeThread<byte[]> thread = null;
