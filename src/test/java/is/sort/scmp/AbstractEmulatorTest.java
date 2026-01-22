@@ -17,137 +17,118 @@ package is.sort.scmp;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-
-import db.Transaction;
-import ghidra.app.emulator.EmulatorHelper;
 import ghidra.app.plugin.assembler.Assembler;
 import ghidra.app.plugin.assembler.Assemblers;
-import ghidra.pcode.emulate.BreakCallBack;
-import ghidra.pcode.memstate.MemoryFaultHandler;
-import ghidra.pcode.memstate.MemoryState;
-import ghidra.pcode.pcoderaw.PcodeOpRaw;
-import ghidra.program.database.mem.MemoryMapDB;
+import ghidra.app.plugin.assembler.AssemblyBuffer;
+import ghidra.app.plugin.processors.sleigh.SleighLanguage;
+import ghidra.pcode.emu.PcodeEmulator;
+import ghidra.pcode.emu.PcodeThread;
+import ghidra.pcode.exec.AnnotatedPcodeUseropLibrary;
+import ghidra.pcode.exec.PcodeExecutor;
+import ghidra.pcode.exec.PcodeExecutorStatePiece.Reason;
+import ghidra.pcode.exec.PcodeUseropLibrary;
+import ghidra.pcode.utils.Utils;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.listing.Instruction;
-import ghidra.program.model.listing.InstructionIterator;
-import ghidra.program.model.mem.MemoryBlock;
-import ghidra.util.exception.CancelledException;
-import ghidra.util.task.TaskMonitor;
+import ghidra.program.model.address.AddressSpace;
+import ghidra.program.model.lang.Register;
 
 public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 	public AbstractEmulatorTest(String lang) {
 		super(lang);
 
-		try (Transaction transaction = program.openTransaction("test")) {
-			MemoryMapDB mem = program.getMemory();
-			MemoryBlock block =
-				mem.createUninitializedBlock("ram", address(0x0000), 0x10000, false);
-			mem.convertToInitialized(block, (byte) 0x00);
-
-			transaction.commit();
-		}
-		catch (Exception e) {
-			fail("Failed to create RAM.", e);
-		}
-	}
-
-	class FailOnMemoryFault implements MemoryFaultHandler {
-		@Override
-		public boolean uninitializedRead(Address address, int size, byte[] buf, int bufOffset) {
-			return false;
-		}
-
-		@Override
-		public boolean unknownAddress(Address address, boolean write) {
-			return false;
-		}
+		emulator = new PcodeEmulator(language) {
+			@Override
+			protected PcodeUseropLibrary<byte[]> createUseropLibrary() {
+				return new LocalPcodeUseropLibrary(language);
+			}
+		};
+		thread = emulator.newThread();
 	}
 
 	protected int assemble(int addr, String... code) {
-		Transaction transaction = program.openTransaction("test");
-		Assembler asm = Assemblers.getAssembler(program);
-		InstructionIterator assembled;
-		try {
-			assembled = asm.assemble(address(addr), code);
+		AddressSpace dyn = language.getDefaultSpace();
+		Address entry = dyn.getAddress(addr);
+		Assembler asm = Assemblers.getAssembler(language);
+		AssemblyBuffer buffer = new AssemblyBuffer(asm, entry);
+		for (String line : code) {
+			try {
+				buffer.assemble(line);
+			}
+			catch (Exception e) {
+				fail("Failed to assemble line: " + line, e);
+				return 0;
+			}
 		}
-		catch (Exception e) {
-			fail("Assembly failed", e);
-			transaction.abort();
-			return 0;
-		}
-		transaction.commit();
-		int len = 0;
-		for (Instruction instr : assembled) {
-			len += instr.getLength();
-		}
-		return len;
+
+		byte[] bytes = buffer.getBytes();
+		emulator.getSharedState().setVar(dyn, entry.getOffset(), bytes.length, true, bytes);
+
+		return bytes.length;
 	}
 
 	protected void setAC(int value) {
-		emulator.writeRegister("AC", value);
+		writeRegister("AC", value);
 	}
 
 	protected void setSR(int value) {
-		emulator.writeRegister("SR", value);
+		writeRegister("SR", value);
 	}
 
 	protected void setE(int value) {
-		emulator.writeRegister("E", value);
+		writeRegister("E", value);
 	}
 
 	protected void setSERIAL(int value) {
-		emulator.writeRegister("SERIAL", value);
+		writeRegister("SERIAL", value);
 	}
 
 	protected void setPC(int value) {
-		emulator.writeRegister("PC", value);
+		writeRegister("PC", value);
+		thread.setCounter(address(value));
 	}
 
 	protected void setP1(int value) {
-		emulator.writeRegister("P1", value);
+		writeRegister("P1", value);
 	}
 
 	protected void setP2(int value) {
-		emulator.writeRegister("P2", value);
+		writeRegister("P2", value);
 	}
 
 	protected void setP3(int value) {
-		emulator.writeRegister("P3", value);
+		writeRegister("P3", value);
 	}
 
 	protected int getAC() {
-		return emulator.readRegister("AC").intValue();
+		return readRegister("AC");
 	}
 
 	protected int getSR() {
-		return emulator.readRegister("SR").intValue();
+		return readRegister("SR");
 	}
 
 	protected int getE() {
-		return emulator.readRegister("E").intValue();
+		return readRegister("E");
 	}
 
 	protected int getSERIAL() {
-		return emulator.readRegister("SERIAL").intValue();
+		return readRegister("SERIAL");
 	}
 
 	protected int getPC() {
-		return emulator.readRegister("PC").intValue();
+		return readRegister("PC");
 	}
 
 	protected int getP1() {
-		return emulator.readRegister("P1").intValue();
+		return readRegister("P1");
 	}
 
 	protected int getP2() {
-		return emulator.readRegister("P2").intValue();
+		return readRegister("P2");
 	}
 
 	protected int getP3() {
-		return emulator.readRegister("P3").intValue();
+		return readRegister("P3");
 	}
 
 	protected void write(int addr, int... bytes) {
@@ -155,11 +136,11 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		for (int v : bytes) {
 			stream.write(v);
 		}
-		emulator.writeMemory(address(addr), stream.toByteArray());
+		writeMemory(addr, stream.toByteArray());
 	}
 
 	protected byte[] read(int addr, int length) {
-		return emulator.readMemory(address(addr), length);
+		return readMemory(addr, length);
 	}
 
 	protected int readByte(int addr) {
@@ -176,16 +157,8 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 	}
 
 	protected void step(int numInstr) {
-		try {
-			for (int i = 0; i < numInstr; ++i) {
-				if (!emulator.step(TaskMonitor.DUMMY)) {
-					fail("Step failed: " + emulator.getLastError());
-					return;
-				}
-			}
-		}
-		catch (CancelledException e) {
-			fail("Failed to step.", e);
+		for (int i = 0; i < numInstr; ++i) {
+			thread.stepInstruction();
 		}
 	}
 
@@ -193,33 +166,51 @@ public abstract class AbstractEmulatorTest extends AbstractIntegrationTest {
 		step(1);
 	}
 
-	private final class AddDisplBreakCallback extends BreakCallBack {
-		@Override
-		public boolean pcodeCallback(PcodeOpRaw op) {
-			// Implements the addDispl segmentop for emulation.
-			// For whatever reason the emulator doesn't heed
-			// segmentop definitions from the pspec.
-			MemoryState mem = emulate.getMemoryState();
-			long ptr = mem.getValue(op.getInput(1));
-			long displ = mem.getValue(op.getInput(2));
+	private void writeMemory(int addr, byte[] data) {
+		AddressSpace dyn = language.getDefaultSpace();
+		Address entry = dyn.getAddress(addr);
 
-			mem.setValue(op.getOutput(), (ptr & 0xF000) | ((ptr + displ) & 0x0FFF));
-			return true;
+		emulator.getSharedState().setVar(dyn, entry.getOffset(), data.length, true, data);
+	}
+
+	private byte[] readMemory(int addr, int length) {
+		AddressSpace dyn = language.getDefaultSpace();
+
+		return emulator.getSharedState().getVar(dyn, addr, length, true, Reason.INSPECT);
+	}
+
+	private void writeRegister(String name, int value) {
+		Register reg = language.getRegister(name);
+		thread.getState()
+				.setVar(language.getRegister(name), Utils.longToBytes(value,
+					reg.getNumBytes(), language.isBigEndian()));
+	}
+
+	private int readRegister(String name) {
+		Register reg = language.getRegister(name);
+
+		return (int) Utils.bytesToLong(thread.getState().getVar(reg, Reason.INSPECT),
+			reg.getNumBytes(), language.isBigEndian());
+
+	}
+
+	public class LocalPcodeUseropLibrary extends AnnotatedPcodeUseropLibrary<byte[]> {
+		private final SleighLanguage language;
+
+		private LocalPcodeUseropLibrary(SleighLanguage language) {
+			this.language = language;
 		}
-	}
 
-	@BeforeEach
-	public void beforeEach() {
-		emulator = new EmulatorHelper(program);
-		emulator.setMemoryFaultHandler(new FailOnMemoryFault());
-		emulator.registerCallOtherCallback("addDispl", new AddDisplBreakCallback());
-	}
+		@PcodeUserop
+		public byte[] addDispl(@OpExecutor PcodeExecutor<byte[]> executor, byte[] reg,
+				byte[] displ) {
+			long regValue = Utils.bytesToLong(reg, reg.length, language.isBigEndian());
+			long displValue = Utils.bytesToLong(displ, displ.length, language.isBigEndian());
+			long ret = (regValue & 0xF000) | ((regValue + displValue) & 0x0FFF);
+			return Utils.longToBytes(ret, 2, language.isBigEndian());
+		}
+	};
 
-	@AfterEach
-	public void afterEach() {
-		emulator.dispose();
-		emulator = null;
-	}
-
-	private EmulatorHelper emulator = null;
+	private PcodeEmulator emulator = null;
+	private PcodeThread<byte[]> thread = null;
 }
